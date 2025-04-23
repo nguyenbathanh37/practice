@@ -1,0 +1,75 @@
+service: backend-lambda-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
+  region: ap-southeast-1
+  environment:
+    DB_NAME: admin
+    DB_USER: admin
+    DB_PASS: Admin1234!
+    DB_HOST:
+      Fn::GetAtt:
+        - MyRDS
+        - Endpoint.Address
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rds:*
+        - lambda:*
+        - logs:*
+        - s3:*
+      Resource: "*"
+
+functions:
+  api:
+    handler: src/index.handler
+    events:
+      - http:
+          path: /auth
+          method: ANY
+          cors: true
+      - http:
+          path: '/auth/{proxy+}'
+          method: ANY
+          cors: true
+
+resources:
+  Resources:
+    MySecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Allow MySQL access
+        VpcId: vpc-0c79cf931e23fdc4c
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 3306
+            ToPort: 3306
+            CidrIp: 0.0.0.0/0
+
+    MyDBSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: Subnet group for RDS
+        SubnetIds:
+          - subnet-078583d46a3787769
+          - subnet-092011687183a42ce
+          - subnet-0ff32152fd61ca2fd
+
+    MyRDS:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBName: admin
+        Engine: mysql
+        EngineVersion: "8.0"
+        DBInstanceClass: db.t3.micro
+        AllocatedStorage: 20
+        MasterUsername: admin
+        MasterUserPassword: Admin1234!
+        VPCSecurityGroups:
+          - !GetAtt MySecurityGroup.GroupId
+        DBSubnetGroupName: !Ref MyDBSubnetGroup
+        PubliclyAccessible: true
+        MultiAZ: false
+        BackupRetentionPeriod: 0
