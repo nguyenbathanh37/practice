@@ -1,10 +1,10 @@
-const authController = require('../controllers/authController');
+import { login } from '../controllers/authController.js';
 
-module.exports = (api) => {
-    api.post('/login', authController.login);
-    //   api.post('/register', authController.register);
-    //   api.post('/forgot-password', authController.forgotPassword);
-    //   api.post('/change-password', authController.changePassword);
+export default (api) => {
+    api.post('/login', login);
+    //   api.post('/register', register);
+    //   api.post('/forgot-password', forgotPassword);
+    //   api.post('/change-password', changePassword);
 
     return api;
 };

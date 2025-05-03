@@ -1,0 +1,9 @@
+{
+    "development": {
+      "username": "admin",
+      "password": "Admin1234!",
+      "database": "admin",
+      "host": "backend-lambda-api-dev-myrds-zikbkajsxurb.c7y2cgo8o2xy.ap-southeast-1.rds.amazonaws.com",
+      "dialect": "mysql"
+    }
+  }
