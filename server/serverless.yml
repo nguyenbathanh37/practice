@@ -77,16 +77,19 @@ resources:
     S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:service}-${self:provider.stage}-avatars
+        BucketName: ${self:service}-${self:provider.stage}-storage
         AccessControl: Private
-        OwnershipControls:
-          Rules:
-            - ObjectOwnership: BucketOwnerEnforced
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
           BlockPublicPolicy: false
           IgnorePublicAcls: true
           RestrictPublicBuckets: true
+        LifecycleConfiguration:
+          Rules:
+            - Id: AutoDeleteExports
+              Status: Enabled
+              ExpirationInDays: 1
+              Prefix: "exports/"
 
     S3BucketPolicy:
       Type: AWS::S3::BucketPolicy
@@ -97,7 +100,7 @@ resources:
             - Effect: Allow
               Principal: "*"
               Action: "*"
-              Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-avatars/*"
+              Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-storage/*"
               Condition:
                 StringEquals:
                   aws:UserAgent: "PracticeApp"    

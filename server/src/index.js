@@ -6,6 +6,7 @@ import { checkPasswordExpiry } from './middlewares/passwordExpireMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
 import healthRoutes from './routes/healthRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 
 const api = lambdaApi();
 
@@ -15,6 +16,7 @@ api.register(healthRoutes, { prefix: '/auth' });
 api.use(authenticate);
 api.use(checkPasswordExpiry);
 api.register(userRoutes, { prefix: '/auth' });
+api.register(exportRoutes, { prefix: '/auth' });
 
 export const handler = async (event, context) => {
   return await api.run(event, context);
