@@ -1,0 +1,190 @@
+$primary-color: #1890ff;
+$layout-header-background: #fff;
+$layout-body-background: #f0f2f5;
+$border-radius-base: 4px;
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  background-color: $layout-body-background;
+}
+
+.app-sider {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  
+  .logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    
+    h2 {
+      margin: 0;
+      color: $primary-color;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.app-header {
+  background: $layout-header-background;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  
+  .trigger {
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s;
+    
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    
+    .user-name {
+      margin-right: 8px;
+    }
+  }
+}
+
+.app-content {
+  padding: 24px;
+  min-height: 280px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $layout-body-background;
+  
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.45);
+      
+      p {
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+.dashboard-container {
+  .ant-card {
+    height: 100%;
+  }
+}
+
+.user-management-container {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .search-container {
+    margin-bottom: 16px;
+  }
+}
+
+.profile-container {
+  .profile-card {
+    max-width: 600px;
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      
+      .profile-avatar {
+        margin-right: 24px;
+      }
+      
+      .profile-info {
+        h3 {
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
+}
+
+.change-password-container {
+  .password-card {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px;
+  }
+  
+  .profile-container {
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+      
+      .profile-avatar {
+        margin-right: 0;
+        margin-bottom: 16px;
+      }
+    }
+  }
+  
+  .user-management-container {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      button {
+        margin-top: 16px;
+      }
+    }
+  }
+}

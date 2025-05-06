@@ -58,3 +58,17 @@ export const uploadAvatar = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getMe = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

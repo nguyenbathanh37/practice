@@ -1,4 +1,4 @@
-import { updateProfile, uploadAvatar, changePassword } from "../controllers/userController.js";
+import { updateProfile, uploadAvatar, changePassword, getMe } from "../controllers/userController.js";
 import { listUsers, createUser, updateUser, deleteUser } from "../controllers/userManagementController.js";
 
 export default (api) => {
@@ -9,6 +9,7 @@ export default (api) => {
     api.post('/createUser', createUser);
     api.put('/updateUser/:id', updateUser);
     api.delete('/deleteUser/:id', deleteUser);
+    api.get('/getMe', getMe);
 
     return api;
 };
