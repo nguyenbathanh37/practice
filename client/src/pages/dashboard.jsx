@@ -38,7 +38,7 @@ const Dashboard = observer(() => {
 
         <Col xs={24} sm={12} lg={8}>
           <Card>
-            <Statistic title="Current User" value={authStore.currentUser?.name || "N/A"} prefix={<UserOutlined />} />
+            <Statistic title="Current User" value={userStore.authStore.currentUser?.name || "N/A"} prefix={<UserOutlined />} />
             <Button type="default" style={{ marginTop: 16 }} onClick={() => navigate("/profile")}>
               View Profile
             </Button>
