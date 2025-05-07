@@ -38,3 +38,17 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+export const uploadFileToS3 = async (presignedUrl, file) => {
+  try {
+    await axios.put(presignedUrl, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    })
+    return true
+  } catch (error) {
+    console.error("Error uploading file to S3:", error)
+    return false
+  }
+}

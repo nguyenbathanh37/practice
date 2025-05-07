@@ -1,16 +1,18 @@
 import { makeAutoObservable, runInAction } from "mobx"
 import { message } from "antd"
-import { api } from "../services/api"
+import { api, uploadFileToS3 } from "../services/api"
 
 class AuthStore {
   currentUser = null
   token = null
   isAuthenticated = false
   isLoading = false
+  avatarUploading = false
 
   constructor() {
     makeAutoObservable(this)
     this.initFromStorage()
+    // this.getCurrentUser()
   }
 
   initFromStorage() {
@@ -99,6 +101,45 @@ class AuthStore {
       })
 
       message.error("Failed to update profile")
+      return false
+    }
+  }
+
+  async uploadAvatar(file) {
+    this.avatarUploading = true
+
+    try {
+      // Step 1: Get presigned URL from the API
+      const response = await api.post("/auth/uploadAvatar")
+      const { uploadURL } = response.data
+
+      // Step 2: Upload the file to S3 using the presigned URL
+      const uploadSuccess = await uploadFileToS3(uploadURL, file)
+
+      if (uploadSuccess) {
+        // Extract the avatar URL from the presigned URL
+        // The avatar URL is the base part of the presigned URL (without query parameters)
+        const avatarUrl = uploadURL.split("?")[0]
+
+        runInAction(() => {
+          if (this.currentUser) {
+            this.currentUser.avatar = avatarUrl
+            this.setCurrentUser(this.currentUser)
+          }
+          this.avatarUploading = false
+        })
+
+        message.success("Avatar uploaded successfully")
+        return true
+      } else {
+        throw new Error("Failed to upload file to S3")
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.avatarUploading = false
+      })
+
+      message.error("Failed to upload avatar")
       return false
     }
   }
