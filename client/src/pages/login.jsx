@@ -19,10 +19,10 @@ const Login = observer(() => {
     setLoading(false)
 
     if (success) {
-      // const currentUser = await authStore.getCurrentUser()
-      // if (currentUser) {
+      const currentUser = await authStore.getCurrentUser()
+      if (currentUser) {
         navigate("/dashboard")
-      // }
+      }
     }
   }
 
