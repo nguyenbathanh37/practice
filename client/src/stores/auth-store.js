@@ -36,9 +36,11 @@ class AuthStore {
 
     try {
       const response = await api.post("/auth/login", { email, password })
+      const response2 = await api.get("/auth/getMe")
 
       runInAction(() => {
         this.setToken(response.data.token)
+        this.setCurrentUser(response2.data)
         this.isAuthenticated = true
         this.isLoading = false
       })
@@ -55,27 +57,27 @@ class AuthStore {
     }
   }
 
-  async getCurrentUser() {
-    this.isLoading = true
+  // async getCurrentUser() {
+  //   this.isLoading = true
 
-    try {
-      const response = await api.get("/auth/getMe")
+  //   try {
+  //     const response = await api.get("/auth/getMe")
 
-      runInAction(() => {
-        this.setCurrentUser(response.data)
-        this.isLoading = false
-      })
+  //     runInAction(() => {
+  //       this.setCurrentUser(response.data)
+  //       this.isLoading = false
+  //     })
 
-      return true
-    } catch (error) {
-      runInAction(() => {
-        this.isLoading = false
-      })
+  //     return true
+  //   } catch (error) {
+  //     runInAction(() => {
+  //       this.isLoading = false
+  //     })
 
-      message.error("Failed to fetch user data")
-      return false
-    }
-  }
+  //     message.error("Failed to fetch user data")
+  //     return false
+  //   }
+  // }
 
   async updateProfile(name) {
     this.isLoading = true
