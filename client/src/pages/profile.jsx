@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Card, Form, Input, Button, Typography, Divider, Avatar, Upload, message } from "antd"
+import { useState, useEffect } from "react"
+import { Card, Form, Input, Button, Typography, Divider, Avatar, Upload, message, Spin } from "antd"
 import { UserOutlined, UploadOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
@@ -12,6 +12,13 @@ const Profile = observer(() => {
   const [loading, setLoading] = useState(false)
   const [fileList, setFileList] = useState([])
   const [previewImage, setPreviewImage] = useState(null)
+
+  useEffect(() => {
+
+    if (authStore.currentUser && !authStore.avatarUrl) {
+      authStore.fetchAvatarUrl(authStore.currentUser.id)
+    }
+  }, [authStore])
 
   const onFinish = async (values) => {
     setLoading(true)
@@ -66,8 +73,8 @@ const Profile = observer(() => {
       return previewImage
     }
 
-    if (authStore.currentUser?.avatar) {
-      return authStore.currentUser.avatar
+    if (authStore.avatarUrl) {
+      return authStore.avatarUrl
     }
 
     return null
@@ -80,6 +87,11 @@ const Profile = observer(() => {
       <Card className="profile-card">
         <div className="profile-header">
           <div className="avatar-container">
+            {authStore.avatarLoading ? (
+              <Spin size="large" />
+            ) : (
+              <Avatar size={100} icon={<UserOutlined />} src={getAvatarUrl()} className="profile-avatar" />
+            )}
             <Avatar size={100} icon={<UserOutlined />} src={getAvatarUrl()} className="profile-avatar" />
             <div className="avatar-upload">
               <Upload beforeUpload={beforeUpload} fileList={fileList} showUploadList={false} accept="image/*">

@@ -10,6 +10,7 @@ import ChangePassword from "./pages/change-password"
 import { useStores } from "./stores"
 import PrivateRoute from "./components/private-route"
 import AppLayout from "./components/app-layout"
+import ExportManagement from "./pages/export-management"
 
 const App = observer(() => {
   const { authStore } = useStores()
@@ -37,6 +38,7 @@ const App = observer(() => {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UserManagement />} />
+            <Route path="exports" element={<ExportManagement />} />
             <Route path="profile" element={<Profile />} />
             <Route path="change-password" element={<ChangePassword />} />
           </Route>

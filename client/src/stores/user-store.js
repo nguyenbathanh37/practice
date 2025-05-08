@@ -12,6 +12,8 @@ class UserStore {
   sortField = "name"
   sortOrder = "asc"
   authStore = null
+  exports = []
+  exportLoading = false
 
   constructor(authStore) {
     makeAutoObservable(this)
@@ -137,40 +139,57 @@ class UserStore {
   }
 
   async exportUserData() {
-    this.isLoading = true
+    this.exportLoading = true
 
     try {
-      const response = await api.post(
-        "/auth/exportUserData",
-        {},
-        {
-          responseType: "blob",
-        },
-      )
+      const response = await api.post("/auth/exportUserData")
+
+      const { downloadUrl, expiresIn } = response.data
+      const expiryTime = Date.now() + Number.parseInt(expiresIn) * 1000
+
+      // Extract filename from URL
+      const urlParts = downloadUrl.split("/")
+      const filenameWithParams = urlParts[urlParts.length - 1]
+      const filename = filenameWithParams.split("?")[0]
+
+      const exportItem = {
+        id: Date.now().toString(),
+        url: downloadUrl,
+        filename,
+        expiryTime,
+        createdAt: new Date().toISOString(),
+      }
 
       runInAction(() => {
-        this.isLoading = false
+        this.exports.unshift(exportItem)
+        this.exportLoading = false
       })
 
-      // Create a download link for the file
-      const url = window.URL.createObjectURL(new Blob([response.data.downloadUrl]))
-      const link = document.createElement("a")
-      link.href = url
-      link.setAttribute("download", "user_data.csv")
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-
-      message.success("User data exported successfully")
+      message.success("Export generated successfully")
       return true
     } catch (error) {
       runInAction(() => {
-        this.isLoading = false
+        this.exportLoading = false
       })
 
       message.error("Failed to export user data")
       return false
     }
+  }
+
+  removeExpiredExports() {
+    const now = Date.now()
+    const validExports = this.exports.filter((exp) => exp.expiryTime > now)
+
+    if (validExports.length !== this.exports.length) {
+      runInAction(() => {
+        this.exports = validExports
+      })
+    }
+  }
+
+  isExportExpired(exportItem) {
+    return Date.now() > exportItem.expiryTime
   }
 }
 

@@ -30,7 +30,7 @@ functions:
           path: /auth
           method: ANY
           cors:
-            origin: 'http://localhost:3000'
+            origin: '*'
             headers:
               - Content-Type
               - X-Amz-Date
@@ -38,12 +38,11 @@ functions:
               - X-Api-Key
               - X-Amz-Security-Token
               - X-Amz-User-Agent
-            allowCredentials: true
       - http:
           path: '/auth/{proxy+}'
           method: ANY
           cors:
-            origin: 'http://localhost:3000'
+            origin: '*'
             headers:
               - Content-Type
               - X-Amz-Date
@@ -51,7 +50,6 @@ functions:
               - X-Api-Key
               - X-Amz-Security-Token
               - X-Amz-User-Agent
-            allowCredentials: true
 
 resources:
   Resources:
@@ -108,6 +106,19 @@ resources:
               Status: Enabled
               ExpirationInDays: 1
               Prefix: "exports/"
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+              AllowedOrigins:
+                - "*"
+              ExposedHeaders:
+                - ETag
+              MaxAge: 3000
 
     S3BucketPolicy:
       Type: AWS::S3::BucketPolicy

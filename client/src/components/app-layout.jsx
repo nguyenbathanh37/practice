@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Layout, Menu, Avatar, Dropdown, Spin } from "antd"
 import {
   UserOutlined,
@@ -8,6 +8,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   LockOutlined,
+  FileExcelOutlined
 } from "@ant-design/icons"
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
@@ -20,6 +21,12 @@ const AppLayout = observer(() => {
   const { authStore } = useStores()
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (authStore.currentUser && !authStore.avatarUrl) {
+      authStore.fetchAvatarUrl(authStore.currentUser.id)
+    }
+  }, [authStore])
 
   const handleLogout = () => {
     authStore.logout()
@@ -63,6 +70,11 @@ const AppLayout = observer(() => {
               icon: <TeamOutlined />,
               label: <Link to="/users">User Management</Link>,
             },
+            {
+              key: "exports",
+              icon: <FileExcelOutlined />,
+              label: <Link to="/exports">Export Management</Link>,
+            },
           ]}
         />
       </Sider>
@@ -76,7 +88,11 @@ const AppLayout = observer(() => {
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <div className="user-info">
                 <span className="user-name">{authStore.currentUser?.name}</span>
-                <Avatar icon={<UserOutlined />} />
+                {authStore.avatarLoading ? (
+                  <Spin size="small" />
+                ) : (
+                  <Avatar icon={<UserOutlined />} src={authStore.avatarUrl} />
+                )}
               </div>
             </Dropdown>
           </div>

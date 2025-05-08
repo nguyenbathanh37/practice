@@ -10,7 +10,7 @@ const s3Client = new S3Client({
 });
 
 export const generateUploadURL = async (userId) => {
-  const avatarKey = `avatars/${userId}/${Date.now()}`;
+  const avatarKey = `avatars/${userId}`;
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET,
@@ -64,4 +64,14 @@ export const generateExport = async () => {
     downloadUrl,
     fileKey // debug
   };
+};
+
+export const getAvatarUrl = async (userId) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: `avatars/${userId}`,
+  });
+
+  // URL hết hạn sau 1 giờ (có thể điều chỉnh)
+  return getSignedUrl(s3Client, command, { expiresIn: 3600 });
 };

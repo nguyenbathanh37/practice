@@ -8,11 +8,15 @@ class AuthStore {
   isAuthenticated = false
   isLoading = false
   avatarUploading = false
+  avatarUrl = null
+  avatarLoading = false
 
   constructor() {
     makeAutoObservable(this)
     this.initFromStorage()
-    // this.getCurrentUser()
+    if (this.currentUser) {
+      this.fetchAvatarUrl(this.currentUser.id)
+    }
   }
 
   initFromStorage() {
@@ -45,6 +49,10 @@ class AuthStore {
         this.isLoading = false
       })
 
+      if (response.data.user) {
+        this.fetchAvatarUrl(response.data.user.id)
+      }
+
       message.success("Login successful")
       return true
     } catch (error) {
@@ -75,6 +83,28 @@ class AuthStore {
       })
 
       message.error("Failed to fetch user data")
+      return false
+    }
+  }
+
+  async fetchAvatarUrl(userId) {
+    this.avatarLoading = true
+
+    try {
+      const response = await api.get(`/auth/getAvatar/${userId}`)
+
+      runInAction(() => {
+        this.avatarUrl = response.data.avatarUrl
+        this.avatarLoading = false
+      })
+
+      return true
+    } catch (error) {
+      runInAction(() => {
+        this.avatarLoading = false
+      })
+
+      console.error("Failed to fetch avatar URL:", error)
       return false
     }
   }
@@ -117,15 +147,11 @@ class AuthStore {
       const uploadSuccess = await uploadFileToS3(uploadURL, file)
 
       if (uploadSuccess) {
-        // Extract the avatar URL from the presigned URL
-        // The avatar URL is the base part of the presigned URL (without query parameters)
-        const avatarUrl = uploadURL.split("?")[0]
+        if (this.currentUser) {
+          await this.fetchAvatarUrl(this.currentUser.id)
+        }
 
         runInAction(() => {
-          if (this.currentUser) {
-            this.currentUser.avatar = avatarUrl
-            this.setCurrentUser(this.currentUser)
-          }
           this.avatarUploading = false
         })
 
@@ -170,6 +196,7 @@ class AuthStore {
     this.token = null
     this.currentUser = null
     this.isAuthenticated = false
+    this.avatarUrl = null
     localStorage.removeItem("token")
     message.success("Logged out successfully")
   }

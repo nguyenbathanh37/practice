@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
 import { Table, Button, Input, Space, Modal, Form, Typography, Popconfirm, Tooltip } from "antd"
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
+import { useNavigate } from "react-router-dom"
 
 const { Title } = Typography
 
 const UserManagement = observer(() => {
   const { userStore } = useStores()
+  const navigate = useNavigate()
   const [form] = Form.useForm()
   const [editingUser, setEditingUser] = useState(null)
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -73,6 +75,11 @@ const UserManagement = observer(() => {
     await userStore.deleteUser(id)
   }
 
+  const handleExport = async () => {
+    await userStore.exportUserData()
+    navigate("/exports")
+  }
+
   const columns = [
     {
       title: "ID",
@@ -119,9 +126,20 @@ const UserManagement = observer(() => {
     <div className="user-management-container">
       <div className="page-header">
         <Title level={2}>User Management</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={showCreateModal}>
-          Add User
-        </Button>
+        <div className="header-actions">
+          <Button
+            type="primary"
+            icon={<ExportOutlined />}
+            onClick={handleExport}
+            loading={userStore.exportLoading}
+            style={{ marginRight: "10px" }}
+          >
+            Export Users
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={showCreateModal}>
+            Add User
+          </Button>
+        </div>
       </div>
 
       <div className="search-container">

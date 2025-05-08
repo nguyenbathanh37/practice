@@ -1,4 +1,4 @@
-import { generateUploadURL } from "../services/s3Service.js";
+import { generateUploadURL, getAvatarUrl } from "../services/s3Service.js";
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
 
@@ -70,5 +70,16 @@ export const getMe = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAvatar = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const avatarUrl = await getAvatarUrl(userId);
+    
+    res.json({ avatarUrl });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get avatar' });
   }
 };
