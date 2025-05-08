@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Table, Button, Input, Space, Modal, Form, Typography, Popconfirm, Tooltip } from "antd"
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined } from "@ant-design/icons"
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined, KeyOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
 import { useNavigate } from "react-router-dom"
@@ -80,6 +80,10 @@ const UserManagement = observer(() => {
     navigate("/exports")
   }
 
+  const handleResetPassword = async (email, userId) => {
+    await userStore.resetPassword(email, userId)
+  }
+
   const columns = [
     {
       title: "ID",
@@ -107,6 +111,22 @@ const UserManagement = observer(() => {
           <Tooltip title="Edit">
             <Button icon={<EditOutlined />} onClick={() => showEditModal(record)} type="text" />
           </Tooltip>
+
+          <Popconfirm
+            title="Are you sure you want to reset password this user?"
+            onConfirm={() => handleResetPassword(record.email, record.id)}
+            okText="Yes"
+            cancelText="No"
+            loading={userStore.isResetPasswordLoading(record.id)}
+          >
+            <Tooltip title="Reset Password">
+              <Button
+                icon={<KeyOutlined />}
+                type="text"
+              />
+            </Tooltip>
+          </Popconfirm>
+
           <Popconfirm
             title="Are you sure you want to delete this user?"
             onConfirm={() => handleDelete(record.id)}
@@ -117,7 +137,7 @@ const UserManagement = observer(() => {
               <Button icon={<DeleteOutlined />} type="text" danger />
             </Tooltip>
           </Popconfirm>
-        </Space>
+        </Space >
       ),
     },
   ]

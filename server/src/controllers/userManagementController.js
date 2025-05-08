@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
+import { sendNewPassword } from "../services/sesService.js";
 
 export const listUsers = async (req, res) => {
     try {
@@ -57,7 +58,7 @@ export const createUser = async (req, res) => {
             lastPasswordChange: new Date()
         });
 
-        // await sendTempPasswordEmail(email, tempPassword);
+        await sendNewPassword(email, tempPassword);
 
         const { password, ...userWithoutPassword } = user.toJSON();
         return res.status(201).json(userWithoutPassword);

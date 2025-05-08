@@ -28,7 +28,8 @@
               "rds:*",
               "lambda:*",
               "logs:*",
-              "s3:*"
+              "s3:*",
+              "ses:*"
             ],
             "Resource": "*"
           }
@@ -41,12 +42,12 @@
             "Runtime": "nodejs20.x",
             "Role": "arn:aws:iam::794038253022:role/backend-lambda-api-dev-ap-southeast-1-lambdaRole",
             "Handler": "src/index.handler",
-            "CodeSize": 36440683,
+            "CodeSize": 36472809,
             "Description": "",
             "Timeout": 6,
             "MemorySize": 1024,
-            "LastModified": "2025-05-07T16:09:34.000+0000",
-            "CodeSha256": "/tqi7dEtarIpKG6CFs+e/Bv0t8LCuEoLE9cS1vcF/Jk=",
+            "LastModified": "2025-05-08T01:06:42.000+0000",
+            "CodeSha256": "dgHjBTohgMW0WS1j5t6pHm+CHtUk1gZV6F2G8XP113U=",
             "Version": "$LATEST",
             "Environment": {
               "Variables": {
@@ -61,7 +62,7 @@
               "Mode": "PassThrough"
             },
             "MasterArn": null,
-            "RevisionId": "a86e0e1a-e64c-4d12-9916-8df967b74d8b",
+            "RevisionId": "10bf8ef9-a75b-4daf-a720-10dac747a807",
             "State": "Active",
             "StateReason": null,
             "StateReasonCode": null,
@@ -94,7 +95,7 @@
           },
           "Code": {
             "RepositoryType": "S3",
-            "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-0358d911-cc30-43a9-8b27-68a5392eae90?versionId=5D5DGJOKpqF9aiSYxcM5S9zq4eQiwMtj&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgeElz0mpYt%2BsbrQ8Q9Tsv7jOGYSClCPlMiwJozQv2bqcCIASOgaJndUV7CaVfzuhOSPOrACg5bvbBHE1M0omMNn17KokCCFwQBBoMMjk1MzM4NzAzNTgzIgxDpQqXiKkwelTe40sq5gGxbhM9NoV%2BaZeOzZS1VwN6iuLsexiC28yxUKPx%2BVLy7feRm2NXiRhPlL7Cfwe1NpW32y2qQtVSDv0bHgImPqhtvSvfyC9aW7ahThXjRrL0Np%2Fm37%2BE4xRPC5ioRyodz9KabXW09frGxC%2FoAonk0kpQP1by%2BqBHAt6obYQbDU%2BOAc67DghGm1T3vo9T7HBt3eYZJlhPpPG0Pl66JHKTYKO2gO%2FvBo7E93sdLaCJtjxbyHmURkyIjsLmyW71JMS52Uk56FZ49IoSdIeRZdFjTJ4Ui%2FNgzql2wPsp5FeyjSH3h9f02RPazTCL6ezABjqQASV7L2zlWNfqz9SRtV2d85uRg%2FazQxt8R%2B3g1mut6xlCwIo%2B250%2FNup5v3ZKp8YgbnvukDa9piM1FjKeMz%2BmU4EdfNCzKMifKFpHlGhUJBuGp5%2BDUn0Shtk3wzT8WfmaLj%2FDvLvgSS7u1OiEH3%2BQSgeUgmfdQEueO94RFjmI%2BzX1coDVjmDv7tCFIiwkYQnqeA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250507T173437Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LP5P7KVHA3%2F20250507%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=2c0d5fcbc224936e798ec4224437b9042a37fbc29680ffe3d90099f581ab7b7c",
+            "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-f8ba57b3-1007-44b2-9e25-c6ecc743f964?versionId=8fcn63cMsVSvDitwfVQm2YDZl7PXhiKR&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgKuG5f9aXKVAo42xLEo3BkwavEfml3WOxtLrIB7j2RrYCIDYAvJ2ThVphj6%2FTopPjF1%2FV9%2FMCCf%2FIaU71Rom%2BWyNBKokCCGAQBBoMMjk1MzM4NzAzNTgzIgxXYnl9edyiRhXMAekq5gEbDY54gB1hE1tSrc5PxOcveF61uOu80%2B6%2B5RpLyLhUEsyUz%2BR%2FKX6KScjCB5tCFI71%2FmXpylLE1N4Hp0t%2FlifKs5quEAWU2xCYGD31smdWQwwthi%2FGsQM1TSRUDvawVjhjERSbLWawib%2FYZ36aUo7Jfp5alku%2FK%2FNzHPqUeuCMR373ktDdHuUt6KdUERSm%2F3yPEWoMaCCUja%2F81aaU0APzvatsrytCwk5J3ZZH83%2FGCrJ6cKlEEhVt6V2SeCdwRUNhUYCzr1qCN4Tk%2BIJkDai8efr8tdUQHyuL7JU9Vd09MEEHHNg%2FozD42%2B3ABjqQAdvjcpCxUrjDRES0wRTQY0W7XPhlOrCdCXdjjxg0KYOhdzqXCmO5HOx8M3UtfNbkx4PK0p2x7uPkAY9eiJqlQE9peTWxsfb5Y74JLtsK69FLMmC%2F7UEVA7uNM%2FF8mLkUF%2FHcg4llPdGJb5OlhYni4NudFB%2BSqpCkUTmpl%2BvnNq%2BxH2MeWlVTJqbW9ZdAhOBqGQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250508T013809Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LPURCEMHEP%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=30cb5acd42573a6bdda39f8a13bb4250bcc70ba47cba45e9b90804aaaab595be",
             "ImageUri": null,
             "ResolvedImageUri": null
           },
@@ -295,7 +296,8 @@
             "rds:*",
             "lambda:*",
             "logs:*",
-            "s3:*"
+            "s3:*",
+            "ses:*"
           ],
           "Resource": "*"
         }
@@ -308,12 +310,12 @@
           "Runtime": "nodejs20.x",
           "Role": "arn:aws:iam::794038253022:role/backend-lambda-api-dev-ap-southeast-1-lambdaRole",
           "Handler": "src/index.handler",
-          "CodeSize": 36440683,
+          "CodeSize": 36472809,
           "Description": "",
           "Timeout": 6,
           "MemorySize": 1024,
-          "LastModified": "2025-05-07T16:09:34.000+0000",
-          "CodeSha256": "/tqi7dEtarIpKG6CFs+e/Bv0t8LCuEoLE9cS1vcF/Jk=",
+          "LastModified": "2025-05-08T01:06:42.000+0000",
+          "CodeSha256": "dgHjBTohgMW0WS1j5t6pHm+CHtUk1gZV6F2G8XP113U=",
           "Version": "$LATEST",
           "Environment": {
             "Variables": {
@@ -328,7 +330,7 @@
             "Mode": "PassThrough"
           },
           "MasterArn": null,
-          "RevisionId": "a86e0e1a-e64c-4d12-9916-8df967b74d8b",
+          "RevisionId": "10bf8ef9-a75b-4daf-a720-10dac747a807",
           "State": "Active",
           "StateReason": null,
           "StateReasonCode": null,
@@ -361,7 +363,7 @@
         },
         "Code": {
           "RepositoryType": "S3",
-          "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-0358d911-cc30-43a9-8b27-68a5392eae90?versionId=5D5DGJOKpqF9aiSYxcM5S9zq4eQiwMtj&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgeElz0mpYt%2BsbrQ8Q9Tsv7jOGYSClCPlMiwJozQv2bqcCIASOgaJndUV7CaVfzuhOSPOrACg5bvbBHE1M0omMNn17KokCCFwQBBoMMjk1MzM4NzAzNTgzIgxDpQqXiKkwelTe40sq5gGxbhM9NoV%2BaZeOzZS1VwN6iuLsexiC28yxUKPx%2BVLy7feRm2NXiRhPlL7Cfwe1NpW32y2qQtVSDv0bHgImPqhtvSvfyC9aW7ahThXjRrL0Np%2Fm37%2BE4xRPC5ioRyodz9KabXW09frGxC%2FoAonk0kpQP1by%2BqBHAt6obYQbDU%2BOAc67DghGm1T3vo9T7HBt3eYZJlhPpPG0Pl66JHKTYKO2gO%2FvBo7E93sdLaCJtjxbyHmURkyIjsLmyW71JMS52Uk56FZ49IoSdIeRZdFjTJ4Ui%2FNgzql2wPsp5FeyjSH3h9f02RPazTCL6ezABjqQASV7L2zlWNfqz9SRtV2d85uRg%2FazQxt8R%2B3g1mut6xlCwIo%2B250%2FNup5v3ZKp8YgbnvukDa9piM1FjKeMz%2BmU4EdfNCzKMifKFpHlGhUJBuGp5%2BDUn0Shtk3wzT8WfmaLj%2FDvLvgSS7u1OiEH3%2BQSgeUgmfdQEueO94RFjmI%2BzX1coDVjmDv7tCFIiwkYQnqeA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250507T173437Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LP5P7KVHA3%2F20250507%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=2c0d5fcbc224936e798ec4224437b9042a37fbc29680ffe3d90099f581ab7b7c",
+          "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-f8ba57b3-1007-44b2-9e25-c6ecc743f964?versionId=8fcn63cMsVSvDitwfVQm2YDZl7PXhiKR&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgKuG5f9aXKVAo42xLEo3BkwavEfml3WOxtLrIB7j2RrYCIDYAvJ2ThVphj6%2FTopPjF1%2FV9%2FMCCf%2FIaU71Rom%2BWyNBKokCCGAQBBoMMjk1MzM4NzAzNTgzIgxXYnl9edyiRhXMAekq5gEbDY54gB1hE1tSrc5PxOcveF61uOu80%2B6%2B5RpLyLhUEsyUz%2BR%2FKX6KScjCB5tCFI71%2FmXpylLE1N4Hp0t%2FlifKs5quEAWU2xCYGD31smdWQwwthi%2FGsQM1TSRUDvawVjhjERSbLWawib%2FYZ36aUo7Jfp5alku%2FK%2FNzHPqUeuCMR373ktDdHuUt6KdUERSm%2F3yPEWoMaCCUja%2F81aaU0APzvatsrytCwk5J3ZZH83%2FGCrJ6cKlEEhVt6V2SeCdwRUNhUYCzr1qCN4Tk%2BIJkDai8efr8tdUQHyuL7JU9Vd09MEEHHNg%2FozD42%2B3ABjqQAdvjcpCxUrjDRES0wRTQY0W7XPhlOrCdCXdjjxg0KYOhdzqXCmO5HOx8M3UtfNbkx4PK0p2x7uPkAY9eiJqlQE9peTWxsfb5Y74JLtsK69FLMmC%2F7UEVA7uNM%2FF8mLkUF%2FHcg4llPdGJb5OlhYni4NudFB%2BSqpCkUTmpl%2BvnNq%2BxH2MeWlVTJqbW9ZdAhOBqGQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250508T013809Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LPURCEMHEP%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=30cb5acd42573a6bdda39f8a13bb4250bcc70ba47cba45e9b90804aaaab595be",
           "ImageUri": null,
           "ResolvedImageUri": null
         },
@@ -382,7 +384,7 @@
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "service: backend-lambda-api\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  stage: ${opt:stage, 'dev'}\r\n  region: ap-southeast-1\r\n  environment:\r\n    DB_NAME: admin\r\n    DB_USER: admin\r\n    DB_PASS: Admin1234!\r\n    DB_HOST:\r\n      Fn::GetAtt:\r\n        - MyRDS\r\n        - Endpoint.Address\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - rds:*\r\n        - lambda:*\r\n        - logs:*\r\n        - s3:*\r\n      Resource: \"*\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: src/index.handler\r\n    events:\r\n      - http:\r\n          path: /auth\r\n          method: ANY\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n      - http:\r\n          path: '/auth/{proxy+}'\r\n          method: ANY\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n\r\nresources:\r\n  Resources:\r\n    MySecurityGroup:\r\n      Type: AWS::EC2::SecurityGroup\r\n      Properties:\r\n        GroupDescription: Allow MySQL access\r\n        VpcId: vpc-0c79cf931e23fdc4c\r\n        SecurityGroupIngress:\r\n          - IpProtocol: tcp\r\n            FromPort: 3306\r\n            ToPort: 3306\r\n            CidrIp: 0.0.0.0/0\r\n\r\n    MyDBSubnetGroup:\r\n      Type: AWS::RDS::DBSubnetGroup\r\n      Properties:\r\n        DBSubnetGroupDescription: Subnet group for RDS\r\n        SubnetIds:\r\n          - subnet-078583d46a3787769\r\n          - subnet-092011687183a42ce\r\n          - subnet-0ff32152fd61ca2fd\r\n\r\n    MyRDS:\r\n      Type: AWS::RDS::DBInstance\r\n      Properties:\r\n        DBName: admin\r\n        Engine: mysql\r\n        EngineVersion: \"8.0\"\r\n        DBInstanceClass: db.t3.micro\r\n        AllocatedStorage: 20\r\n        MasterUsername: admin\r\n        MasterUserPassword: Admin1234!\r\n        VPCSecurityGroups:\r\n          - !GetAtt MySecurityGroup.GroupId\r\n        DBSubnetGroupName: !Ref MyDBSubnetGroup\r\n        PubliclyAccessible: true\r\n        MultiAZ: false\r\n        BackupRetentionPeriod: 0\r\n\r\n    S3Bucket:\r\n      Type: AWS::S3::Bucket\r\n      Properties:\r\n        BucketName: ${self:service}-${self:provider.stage}-storage\r\n        AccessControl: Private\r\n        PublicAccessBlockConfiguration:\r\n          BlockPublicAcls: true\r\n          BlockPublicPolicy: false\r\n          IgnorePublicAcls: true\r\n          RestrictPublicBuckets: true\r\n        LifecycleConfiguration:\r\n          Rules:\r\n            - Id: AutoDeleteExports\r\n              Status: Enabled\r\n              ExpirationInDays: 1\r\n              Prefix: \"exports/\"\r\n        CorsConfiguration:\r\n          CorsRules:\r\n            - AllowedHeaders:\r\n                - \"*\"\r\n              AllowedMethods:\r\n                - GET\r\n                - PUT\r\n                - POST\r\n              AllowedOrigins:\r\n                - \"*\"\r\n              ExposedHeaders:\r\n                - ETag\r\n              MaxAge: 3000\r\n\r\n    S3BucketPolicy:\r\n      Type: AWS::S3::BucketPolicy\r\n      Properties:\r\n        Bucket: !Ref S3Bucket\r\n        PolicyDocument:\r\n          Statement:\r\n            - Effect: Allow\r\n              Principal: \"*\"\r\n              Action: \"*\"\r\n              Resource: \"arn:aws:s3:::${self:service}-${self:provider.stage}-storage/*\"\r\n              Condition:\r\n                StringEquals:\r\n                  aws:UserAgent: \"PracticeApp\"    ",
+    "serviceRawFile": "service: backend-lambda-api\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  stage: ${opt:stage, 'dev'}\r\n  region: ap-southeast-1\r\n  environment:\r\n    DB_NAME: admin\r\n    DB_USER: admin\r\n    DB_PASS: Admin1234!\r\n    DB_HOST:\r\n      Fn::GetAtt:\r\n        - MyRDS\r\n        - Endpoint.Address\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - rds:*\r\n        - lambda:*\r\n        - logs:*\r\n        - s3:*\r\n        - ses:*\r\n      Resource: \"*\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: src/index.handler\r\n    events:\r\n      - http:\r\n          path: /auth\r\n          method: ANY\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n      - http:\r\n          path: '/auth/{proxy+}'\r\n          method: ANY\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n\r\nresources:\r\n  Resources:\r\n    MySecurityGroup:\r\n      Type: AWS::EC2::SecurityGroup\r\n      Properties:\r\n        GroupDescription: Allow MySQL access\r\n        VpcId: vpc-0c79cf931e23fdc4c\r\n        SecurityGroupIngress:\r\n          - IpProtocol: tcp\r\n            FromPort: 3306\r\n            ToPort: 3306\r\n            CidrIp: 0.0.0.0/0\r\n\r\n    MyDBSubnetGroup:\r\n      Type: AWS::RDS::DBSubnetGroup\r\n      Properties:\r\n        DBSubnetGroupDescription: Subnet group for RDS\r\n        SubnetIds:\r\n          - subnet-078583d46a3787769\r\n          - subnet-092011687183a42ce\r\n          - subnet-0ff32152fd61ca2fd\r\n\r\n    MyRDS:\r\n      Type: AWS::RDS::DBInstance\r\n      Properties:\r\n        DBName: admin\r\n        Engine: mysql\r\n        EngineVersion: \"8.0\"\r\n        DBInstanceClass: db.t3.micro\r\n        AllocatedStorage: 20\r\n        MasterUsername: admin\r\n        MasterUserPassword: Admin1234!\r\n        VPCSecurityGroups:\r\n          - !GetAtt MySecurityGroup.GroupId\r\n        DBSubnetGroupName: !Ref MyDBSubnetGroup\r\n        PubliclyAccessible: true\r\n        MultiAZ: false\r\n        BackupRetentionPeriod: 0\r\n\r\n    S3Bucket:\r\n      Type: AWS::S3::Bucket\r\n      Properties:\r\n        BucketName: ${self:service}-${self:provider.stage}-storage\r\n        AccessControl: Private\r\n        PublicAccessBlockConfiguration:\r\n          BlockPublicAcls: true\r\n          BlockPublicPolicy: false\r\n          IgnorePublicAcls: true\r\n          RestrictPublicBuckets: true\r\n        LifecycleConfiguration:\r\n          Rules:\r\n            - Id: AutoDeleteExports\r\n              Status: Enabled\r\n              ExpirationInDays: 1\r\n              Prefix: \"exports/\"\r\n        CorsConfiguration:\r\n          CorsRules:\r\n            - AllowedHeaders:\r\n                - \"*\"\r\n              AllowedMethods:\r\n                - GET\r\n                - PUT\r\n                - POST\r\n              AllowedOrigins:\r\n                - \"*\"\r\n              ExposedHeaders:\r\n                - ETag\r\n              MaxAge: 3000\r\n\r\n    S3BucketPolicy:\r\n      Type: AWS::S3::BucketPolicy\r\n      Properties:\r\n        Bucket: !Ref S3Bucket\r\n        PolicyDocument:\r\n          Statement:\r\n            - Effect: Allow\r\n              Principal: \"*\"\r\n              Action: \"*\"\r\n              Resource: \"arn:aws:s3:::${self:service}-${self:provider.stage}-storage/*\"\r\n              Condition:\r\n                StringEquals:\r\n                  aws:UserAgent: \"PracticeApp\"    ",
     "command": [
       "deploy",
       "function"
@@ -398,12 +400,12 @@
     "serviceProviderAwsCfStackName": "backend-lambda-api-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:ap-southeast-1:794038253022:stack/backend-lambda-api-dev/2e803820-27ee-11f0-b6ec-0a070cdaf5eb",
     "serviceProviderAwsCfStackCreated": "2025-05-03T07:13:58.539Z",
-    "serviceProviderAwsCfStackUpdated": "2025-05-07T16:09:27.059Z",
+    "serviceProviderAwsCfStackUpdated": "2025-05-08T01:01:23.032Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
         "OutputKey": "ApiLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:ap-southeast-1:794038253022:function:backend-lambda-api-dev-api:16",
+        "OutputValue": "arn:aws:lambda:ap-southeast-1:794038253022:function:backend-lambda-api-dev-api:17",
         "Description": "Current Lambda function version",
         "ExportName": "sls-backend-lambda-api-dev-ApiLambdaFunctionQualifiedArn"
       },

@@ -20,6 +20,7 @@ provider:
         - lambda:*
         - logs:*
         - s3:*
+        - ses:*
       Resource: "*"
 
 functions:

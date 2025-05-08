@@ -14,6 +14,7 @@ class UserStore {
   authStore = null
   exports = []
   exportLoading = false
+  resetPasswordLoading = {}
 
   constructor(authStore) {
     makeAutoObservable(this)
@@ -190,6 +191,34 @@ class UserStore {
 
   isExportExpired(exportItem) {
     return Date.now() > exportItem.expiryTime
+  }
+
+  async resetPassword(email, userId) {
+    runInAction(() => {
+      this.resetPasswordLoading = { ...this.resetPasswordLoading, [userId]: true }
+    })
+
+    try {
+      await api.post("/auth/forgotPassword", { email })
+
+      runInAction(() => {
+        this.resetPasswordLoading = { ...this.resetPasswordLoading, [userId]: false }
+      })
+
+      message.success(`New password has been sent to ${email}`)
+      return true
+    } catch (error) {
+      runInAction(() => {
+        this.resetPasswordLoading = { ...this.resetPasswordLoading, [userId]: false }
+      })
+
+      message.error("Failed to reset password")
+      return false
+    }
+  }
+
+  isResetPasswordLoading(userId) {
+    return !!this.resetPasswordLoading[userId]
   }
 }
 

@@ -92,7 +92,6 @@ const Profile = observer(() => {
             ) : (
               <Avatar size={100} icon={<UserOutlined />} src={getAvatarUrl()} className="profile-avatar" />
             )}
-            <Avatar size={100} icon={<UserOutlined />} src={getAvatarUrl()} className="profile-avatar" />
             <div className="avatar-upload">
               <Upload beforeUpload={beforeUpload} fileList={fileList} showUploadList={false} accept="image/*">
                 <Button icon={<UploadOutlined />} size="small">
