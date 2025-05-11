@@ -27,7 +27,7 @@ const Dashboard = observer(() => {
       <Title level={2}>Dashboard</Title>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={12}>
           <Card loading={loading}>
             <Statistic title="Total Users" value={userStore.totalUsers} prefix={<TeamOutlined />} />
             <Button type="primary" style={{ marginTop: 16 }} onClick={() => navigate("/users")}>
@@ -36,25 +36,11 @@ const Dashboard = observer(() => {
           </Card>
         </Col>
 
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={12}>
           <Card>
             <Statistic title="Current User" value={authStore.currentUser?.name || "N/A"} prefix={<UserOutlined />} />
             <Button type="default" style={{ marginTop: 16 }} onClick={() => navigate("/profile")}>
               View Profile
-            </Button>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
-            <Statistic title="API Status" value="Online" valueStyle={{ color: "#3f8600" }} />
-            <Button
-              type="default"
-              style={{ marginTop: 16 }}
-              onClick={() => userStore.exportUserData()}
-              loading={userStore.isLoading}
-            >
-              Export User Data
             </Button>
           </Card>
         </Col>

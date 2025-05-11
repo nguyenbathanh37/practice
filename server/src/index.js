@@ -2,6 +2,7 @@ import lambdaApi from 'lambda-api';
 
 import { authenticate } from './middlewares/authMiddleware.js';
 import { checkPasswordExpiry } from './middlewares/passwordExpireMiddleware.js';
+import { corsMiddleware } from './middlewares/corsMiddleware.js';
 
 import authRoutes from './routes/authRoutes.js';
 import healthRoutes from './routes/healthRoutes.js';
@@ -10,24 +11,7 @@ import exportRoutes from './routes/exportRoutes.js';
 
 const api = lambdaApi();
 
-// Thêm middleware CORS thủ công
-api.use(async (req, res, next) => {
-  res.cors({
-    origin: '*', // hoặc 'http://localhost:3000'
-    credentials: false,
-    headers: 'Content-Type, Authorization',
-    methods: 'GET, POST, PUT, DELETE, OPTIONS'
-  });
-
-  // Nếu là preflight request (OPTIONS), trả luôn
-  if (req.method === 'OPTIONS') {
-    res.status(200);
-    return res.send();
-  }
-
-  // Tiếp tục các middleware/route tiếp theo
-  return next();
-});
+api.use(corsMiddleware);
 
 api.register(authRoutes, { prefix: '/auth' });
 api.register(healthRoutes, { prefix: '/auth' });

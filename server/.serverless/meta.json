@@ -42,12 +42,12 @@
             "Runtime": "nodejs20.x",
             "Role": "arn:aws:iam::794038253022:role/backend-lambda-api-dev-ap-southeast-1-lambdaRole",
             "Handler": "src/index.handler",
-            "CodeSize": 36472809,
+            "CodeSize": 36472895,
             "Description": "",
             "Timeout": 6,
             "MemorySize": 1024,
-            "LastModified": "2025-05-08T01:06:42.000+0000",
-            "CodeSha256": "dgHjBTohgMW0WS1j5t6pHm+CHtUk1gZV6F2G8XP113U=",
+            "LastModified": "2025-05-11T09:39:51.000+0000",
+            "CodeSha256": "6Lg7TToEwZH+oFcje37hgjTCECg6sqkH9t24WgBSfrQ=",
             "Version": "$LATEST",
             "Environment": {
               "Variables": {
@@ -62,7 +62,7 @@
               "Mode": "PassThrough"
             },
             "MasterArn": null,
-            "RevisionId": "10bf8ef9-a75b-4daf-a720-10dac747a807",
+            "RevisionId": "24b1b61d-71a5-454f-8625-3e6483bc0b56",
             "State": "Active",
             "StateReason": null,
             "StateReasonCode": null,
@@ -95,7 +95,7 @@
           },
           "Code": {
             "RepositoryType": "S3",
-            "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-f8ba57b3-1007-44b2-9e25-c6ecc743f964?versionId=8fcn63cMsVSvDitwfVQm2YDZl7PXhiKR&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgKuG5f9aXKVAo42xLEo3BkwavEfml3WOxtLrIB7j2RrYCIDYAvJ2ThVphj6%2FTopPjF1%2FV9%2FMCCf%2FIaU71Rom%2BWyNBKokCCGAQBBoMMjk1MzM4NzAzNTgzIgxXYnl9edyiRhXMAekq5gEbDY54gB1hE1tSrc5PxOcveF61uOu80%2B6%2B5RpLyLhUEsyUz%2BR%2FKX6KScjCB5tCFI71%2FmXpylLE1N4Hp0t%2FlifKs5quEAWU2xCYGD31smdWQwwthi%2FGsQM1TSRUDvawVjhjERSbLWawib%2FYZ36aUo7Jfp5alku%2FK%2FNzHPqUeuCMR373ktDdHuUt6KdUERSm%2F3yPEWoMaCCUja%2F81aaU0APzvatsrytCwk5J3ZZH83%2FGCrJ6cKlEEhVt6V2SeCdwRUNhUYCzr1qCN4Tk%2BIJkDai8efr8tdUQHyuL7JU9Vd09MEEHHNg%2FozD42%2B3ABjqQAdvjcpCxUrjDRES0wRTQY0W7XPhlOrCdCXdjjxg0KYOhdzqXCmO5HOx8M3UtfNbkx4PK0p2x7uPkAY9eiJqlQE9peTWxsfb5Y74JLtsK69FLMmC%2F7UEVA7uNM%2FF8mLkUF%2FHcg4llPdGJb5OlhYni4NudFB%2BSqpCkUTmpl%2BvnNq%2BxH2MeWlVTJqbW9ZdAhOBqGQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250508T013809Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LPURCEMHEP%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=30cb5acd42573a6bdda39f8a13bb4250bcc70ba47cba45e9b90804aaaab595be",
+            "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-821be775-2a9c-4605-9e10-6e6d234a36a4?versionId=ZqYPey6_Y6vlFGTD491pSSx.3dwY.s.q&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBIaDmFwLXNvdXRoZWFzdC0xIkcwRQIgZ92Yw3RhAh3ug1%2BEBoTVpGhujSt7l0026H8fafHSVbECIQCmjJTAN4pA1PiZba5MvL3lz%2BReSEaP2aL%2BtMt70f2rByqSAgi7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDI5NTMzODcwMzU4MyIMt9rLUnVdiLueHIBhKuYBK6lC7l0qpy8k8ZoVUyDh23VAXCkxRcpfDKyCStavIF8abn7aCsViHkXTZTc26k1P85nQtI5tTEVkFYHsOS7QaIdQLdQ4kv4h7hsmj5OKQl66dz%2Fz6zgzfu6xw5bCcMAka7ZN%2Fle4i%2Flqs8Go4OPTN4v950JWNYyQghIyMuWcd8HfK47xaJv1zCiMXQ5icVPjDDQ%2FZvRn9UccApGy%2F%2FHWzt2nY00%2B%2Fsp5uYINa0KIrN5NbJ5eUFPXZEv5d0dcBhRo%2FgYb%2BxXQrQgzjwKUMWikWNzbv0JcABjZGl4Jro%2BJMNdQxoRbQ2Awq%2BKBwQY6jwGGzd%2F4nBWlRMpM40j%2FHbvXHp5af3m5cdXqT3iX%2FHF0DR0rnGO6HQETjKEpnO9fuozCp4JRrrprTtQiXkxmuarYP9zpavWKeWIKDb%2BcjSLL8SJr84rHBeK9JkRpV%2BehwmHUoLy6Dv22Sfg4cgo0%2BQLYYxLS0BA94hvHrUtGlcRBVUkCIShZ9oE7WxqcsexcdQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250511T101749Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LP6HVWJ7B3%2F20250511%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=5dbb837ed6fc2148ddcabb581296116f95c0d14294832a407da9c8c3a39cbb1b",
             "ImageUri": null,
             "ResolvedImageUri": null
           },
@@ -310,12 +310,12 @@
           "Runtime": "nodejs20.x",
           "Role": "arn:aws:iam::794038253022:role/backend-lambda-api-dev-ap-southeast-1-lambdaRole",
           "Handler": "src/index.handler",
-          "CodeSize": 36472809,
+          "CodeSize": 36472895,
           "Description": "",
           "Timeout": 6,
           "MemorySize": 1024,
-          "LastModified": "2025-05-08T01:06:42.000+0000",
-          "CodeSha256": "dgHjBTohgMW0WS1j5t6pHm+CHtUk1gZV6F2G8XP113U=",
+          "LastModified": "2025-05-11T09:39:51.000+0000",
+          "CodeSha256": "6Lg7TToEwZH+oFcje37hgjTCECg6sqkH9t24WgBSfrQ=",
           "Version": "$LATEST",
           "Environment": {
             "Variables": {
@@ -330,7 +330,7 @@
             "Mode": "PassThrough"
           },
           "MasterArn": null,
-          "RevisionId": "10bf8ef9-a75b-4daf-a720-10dac747a807",
+          "RevisionId": "24b1b61d-71a5-454f-8625-3e6483bc0b56",
           "State": "Active",
           "StateReason": null,
           "StateReasonCode": null,
@@ -363,7 +363,7 @@
         },
         "Code": {
           "RepositoryType": "S3",
-          "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-f8ba57b3-1007-44b2-9e25-c6ecc743f964?versionId=8fcn63cMsVSvDitwfVQm2YDZl7PXhiKR&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgKuG5f9aXKVAo42xLEo3BkwavEfml3WOxtLrIB7j2RrYCIDYAvJ2ThVphj6%2FTopPjF1%2FV9%2FMCCf%2FIaU71Rom%2BWyNBKokCCGAQBBoMMjk1MzM4NzAzNTgzIgxXYnl9edyiRhXMAekq5gEbDY54gB1hE1tSrc5PxOcveF61uOu80%2B6%2B5RpLyLhUEsyUz%2BR%2FKX6KScjCB5tCFI71%2FmXpylLE1N4Hp0t%2FlifKs5quEAWU2xCYGD31smdWQwwthi%2FGsQM1TSRUDvawVjhjERSbLWawib%2FYZ36aUo7Jfp5alku%2FK%2FNzHPqUeuCMR373ktDdHuUt6KdUERSm%2F3yPEWoMaCCUja%2F81aaU0APzvatsrytCwk5J3ZZH83%2FGCrJ6cKlEEhVt6V2SeCdwRUNhUYCzr1qCN4Tk%2BIJkDai8efr8tdUQHyuL7JU9Vd09MEEHHNg%2FozD42%2B3ABjqQAdvjcpCxUrjDRES0wRTQY0W7XPhlOrCdCXdjjxg0KYOhdzqXCmO5HOx8M3UtfNbkx4PK0p2x7uPkAY9eiJqlQE9peTWxsfb5Y74JLtsK69FLMmC%2F7UEVA7uNM%2FF8mLkUF%2FHcg4llPdGJb5OlhYni4NudFB%2BSqpCkUTmpl%2BvnNq%2BxH2MeWlVTJqbW9ZdAhOBqGQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250508T013809Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LPURCEMHEP%2F20250508%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=30cb5acd42573a6bdda39f8a13bb4250bcc70ba47cba45e9b90804aaaab595be",
+          "Location": "https://awslambda-ap-se-1-tasks.s3.ap-southeast-1.amazonaws.com/snapshots/794038253022/backend-lambda-api-dev-api-821be775-2a9c-4605-9e10-6e6d234a36a4?versionId=ZqYPey6_Y6vlFGTD491pSSx.3dwY.s.q&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBIaDmFwLXNvdXRoZWFzdC0xIkcwRQIgZ92Yw3RhAh3ug1%2BEBoTVpGhujSt7l0026H8fafHSVbECIQCmjJTAN4pA1PiZba5MvL3lz%2BReSEaP2aL%2BtMt70f2rByqSAgi7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDI5NTMzODcwMzU4MyIMt9rLUnVdiLueHIBhKuYBK6lC7l0qpy8k8ZoVUyDh23VAXCkxRcpfDKyCStavIF8abn7aCsViHkXTZTc26k1P85nQtI5tTEVkFYHsOS7QaIdQLdQ4kv4h7hsmj5OKQl66dz%2Fz6zgzfu6xw5bCcMAka7ZN%2Fle4i%2Flqs8Go4OPTN4v950JWNYyQghIyMuWcd8HfK47xaJv1zCiMXQ5icVPjDDQ%2FZvRn9UccApGy%2F%2FHWzt2nY00%2B%2Fsp5uYINa0KIrN5NbJ5eUFPXZEv5d0dcBhRo%2FgYb%2BxXQrQgzjwKUMWikWNzbv0JcABjZGl4Jro%2BJMNdQxoRbQ2Awq%2BKBwQY6jwGGzd%2F4nBWlRMpM40j%2FHbvXHp5af3m5cdXqT3iX%2FHF0DR0rnGO6HQETjKEpnO9fuozCp4JRrrprTtQiXkxmuarYP9zpavWKeWIKDb%2BcjSLL8SJr84rHBeK9JkRpV%2BehwmHUoLy6Dv22Sfg4cgo0%2BQLYYxLS0BA94hvHrUtGlcRBVUkCIShZ9oE7WxqcsexcdQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250511T101749Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAUJQ4O7LP6HVWJ7B3%2F20250511%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Signature=5dbb837ed6fc2148ddcabb581296116f95c0d14294832a407da9c8c3a39cbb1b",
           "ImageUri": null,
           "ResolvedImageUri": null
         },
