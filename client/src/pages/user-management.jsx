@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Table, Button, Input, Space, Modal, Form, Typography, Popconfirm, Tooltip } from "antd"
+import { Table, Button, Input, Space, Modal, Form, Typography, Tooltip, Checkbox } from "antd"
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined, KeyOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
@@ -14,6 +14,11 @@ const UserManagement = observer(() => {
   const [editingUser, setEditingUser] = useState(null)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [searchInput, setSearchInput] = useState("")
+  const [isRealEmailChecked, setIsRealEmailChecked] = useState(false)
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+  const [userToDelete, setUserToDelete] = useState(null)
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false)
+  const [userToResetPassword, setUserToResetPassword] = useState(null)
 
   useEffect(() => {
     userStore.fetchUsers()
@@ -46,8 +51,10 @@ const UserManagement = observer(() => {
     setEditingUser(user)
     form.setFieldsValue({
       name: user.name,
-      email: user.email,
+      isRealEmail: !user.isRealEmail,
+      contactEmail: user.contactEmail,
     })
+    setIsRealEmailChecked(!user.isRealEmail)
     setIsModalVisible(true)
   }
 
@@ -56,9 +63,9 @@ const UserManagement = observer(() => {
       const values = await form.validateFields()
 
       if (editingUser) {
-        await userStore.updateUser(editingUser.id, values.name)
+        await userStore.updateUser(editingUser.id, values.name, !values.isRealEmail, values.contactEmail)
       } else {
-        await userStore.createUser(values.email, values.name)
+        await userStore.createUser(values.email, values.name, !values.isRealEmail, values.contactEmail)
       }
 
       setIsModalVisible(false)
@@ -82,6 +89,42 @@ const UserManagement = observer(() => {
 
   const handleResetPassword = async (email, userId) => {
     await userStore.resetPassword(email, userId)
+  }
+
+  const showDeleteModal = (user) => {
+    setUserToDelete(user)
+    setIsDeleteModalVisible(true)
+  }
+
+  const handleDeleteModalCancel = () => {
+    setIsDeleteModalVisible(false)
+    setUserToDelete(null)
+  }
+
+  const handleDeleteModalConfirm = async () => {
+    if (userToDelete) {
+      await userStore.deleteUser(userToDelete.id)
+      setIsDeleteModalVisible(false)
+      setUserToDelete(null)
+    }
+  }
+
+  const showResetPasswordModal = (user) => {
+    setUserToResetPassword(user)
+    setIsResetPasswordModalVisible(true)
+  }
+
+  const handleResetPasswordModalCancel = () => {
+    setIsResetPasswordModalVisible(false)
+    setUserToResetPassword(null)
+  }
+
+  const handleResetPasswordModalConfirm = async () => {
+    if (userToResetPassword) {
+      await userStore.resetPassword(userToResetPassword.email, userToResetPassword.userId)
+      setIsResetPasswordModalVisible(false)
+      setUserToResetPassword(null)
+    }
   }
 
   const columns = [
@@ -112,31 +155,17 @@ const UserManagement = observer(() => {
             <Button icon={<EditOutlined />} onClick={() => showEditModal(record)} type="text" />
           </Tooltip>
 
-          <Popconfirm
-            title="Are you sure you want to reset password this user?"
-            onConfirm={() => handleResetPassword(record.email, record.id)}
-            okText="Yes"
-            cancelText="No"
-            loading={userStore.isResetPasswordLoading(record.id)}
-          >
-            <Tooltip title="Reset Password">
-              <Button
-                icon={<KeyOutlined />}
-                type="text"
-              />
-            </Tooltip>
-          </Popconfirm>
+          <Tooltip title="Reset Password">
+            <Button
+              icon={<KeyOutlined />}
+              type="text"
+              onClick={() => showResetPasswordModal(record)}
+            />
+          </Tooltip>
 
-          <Popconfirm
-            title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Tooltip title="Delete">
-              <Button icon={<DeleteOutlined />} type="text" danger />
-            </Tooltip>
-          </Popconfirm>
+          <Tooltip title="Delete">
+            <Button icon={<DeleteOutlined />} type="text" danger onClick={() => showDeleteModal(record)} />
+          </Tooltip>
         </Space >
       ),
     },
@@ -216,7 +245,43 @@ const UserManagement = observer(() => {
               <Input />
             </Form.Item>
           )}
+
+          <Form.Item name="isRealEmail" valuePropName="checked" label={null} onChange={(e) => setIsRealEmailChecked(e.target.checked)}>
+            <Checkbox>Real Email</Checkbox>
+          </Form.Item>
+
+          {isRealEmailChecked && (
+            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }]}>
+              <Input />
+            </Form.Item>
+          )}
         </Form>
+      </Modal>
+
+      <Modal
+        title="Delete User"
+        open={isDeleteModalVisible}
+        onOk={handleDeleteModalConfirm}
+        onCancel={handleDeleteModalCancel}
+        okText="Delete"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to delete the user {userToDelete?.name}?</p>
+        <p>This action cannot be undone.</p>
+      </Modal>
+
+      <Modal
+        title="Reset Password User"
+        open={isResetPasswordModalVisible}
+        onOk={handleResetPasswordModalConfirm}
+        onCancel={handleResetPasswordModalCancel}
+        okText="Reset"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to reset password the user {userToResetPassword?.name}?</p>
+        <p>This action cannot be undone.</p>
       </Modal>
     </div>
   )

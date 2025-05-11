@@ -109,15 +109,17 @@ class AuthStore {
     }
   }
 
-  async updateProfile(name) {
+  async updateProfile(name, isRealEmail=true, contactEmail = null) {
     this.isLoading = true
 
     try {
-      await api.post("/auth/updateProfile", { name })
+      await api.post("/auth/updateProfile", { name, isRealEmail, contactEmail })
 
       runInAction(() => {
         if (this.currentUser) {
           this.currentUser.name = name
+          this.currentUser.isRealEmail = isRealEmail
+          this.currentUser.contactEmail = contactEmail
           this.setCurrentUser(this.currentUser)
         }
         this.isLoading = false
