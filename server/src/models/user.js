@@ -6,7 +6,10 @@ const User = sequelize.define('User', {
   password: { type: DataTypes.STRING, allowNull: false },
   name: DataTypes.STRING,
   avatar: DataTypes.STRING,
-  lastPasswordChange: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+  lastPasswordChange: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  contactEmail: { type: DataTypes.STRING },
+  isRealEmail: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isDelete: { type: DataTypes.BOOLEAN, defaultValue: false }
 });
 
 export default User;

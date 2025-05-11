@@ -2,14 +2,39 @@ import User from "../models/user.js";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
 import { sendNewPassword } from "../services/sesService.js";
+import * as yup from 'yup';
+
+const createUserSchema = yup.object().shape({
+    email: yup.string().email().required('Email is required'),
+    name: yup.string().required('Name is required'),
+    isRealEmail: yup.boolean().optional(),
+    contactEmail: yup.string().email().optional(),
+});
+
+const updateUserSchema = yup.object().shape({
+    name: yup.string().optional(),
+    isRealEmail: yup.boolean().optional(),
+    contactEmail: yup.string().email().optional(),
+});
+
+const listUsersSchema = yup.object().shape({
+    page: yup.number().integer().min(1).optional(),
+    limit: yup.number().integer().min(1).optional(),
+    search: yup.string().optional(),
+    sort: yup.string().matches(/^[a-zA-Z]+_(asc|desc)$/i, 'Sort must be in the format field_asc or field_desc').optional(),
+});
 
 export const listUsers = async (req, res) => {
     try {
+        await listUsersSchema.validate(req.query);
+
         const { page = 1, limit = 10, search, sort } = req.query;
 
         const offset = (page - 1) * limit;
 
-        const where = {};
+        const where = {
+            isDelete: false
+        };
         if (search) {
             where[Op.or] = [
                 { name: { [Op.like]: `%${search}%` } },
@@ -40,13 +65,17 @@ export const listUsers = async (req, res) => {
             users
         });
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
         return res.status(500).json({ error: error.message });
     }
 };
 
 export const createUser = async (req, res) => {
     try {
-        const { email, name } = req.body;
+        await createUserSchema.validate(req.body);
+        const { email, name, isRealEmail, contactEmail } = req.body;
 
         const tempPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
@@ -54,6 +83,8 @@ export const createUser = async (req, res) => {
         const user = await User.create({
             email,
             name,
+            isRealEmail,
+            contactEmail,
             password: hashedPassword,
             lastPasswordChange: new Date()
         });
@@ -63,23 +94,30 @@ export const createUser = async (req, res) => {
         const { password, ...userWithoutPassword } = user.toJSON();
         return res.status(201).json(userWithoutPassword);
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
         return res.status(400).json({ error: error.message });
     }
 };
 
 export const updateUser = async (req, res) => {
     try {
+        await updateUserSchema.validate(req.body);
         const { id } = req.params;
-        const { name } = req.body;
+        const { name, isRealEmail, contactEmail } = req.body;
 
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        await user.update({ name });
+        await user.update({ name, isRealEmail, contactEmail });
 
         const { password, ...userWithoutPassword } = user.toJSON();
         return res.status(201).json(userWithoutPassword);
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
         return res.status(400).json({ error: error.message });
     }
 };
@@ -91,7 +129,9 @@ export const deleteUser = async (req, res) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        await user.destroy();
+        user.isDelete = true;
+        await user.save();
+
         return res.json({ success: true });
     } catch (error) {
         return res.status(500).json({ error: error.message });

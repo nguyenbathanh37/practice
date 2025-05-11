@@ -70,11 +70,11 @@ class UserStore {
     }
   }
 
-  async createUser(email, name) {
+  async createUser(email, name, isRealEmail = true, contactEmail = null) {
     this.isLoading = true
 
     try {
-      await api.post("/auth/createUser", { email, name })
+      await api.post("/auth/createUser", { email, name, isRealEmail, contactEmail })
 
       runInAction(() => {
         this.isLoading = false
@@ -93,11 +93,11 @@ class UserStore {
     }
   }
 
-  async updateUser(id, name) {
+  async updateUser(id, name, isRealEmail = true, contactEmail = null) {
     this.isLoading = true
 
     try {
-      await api.put(`/auth/updateUser/${id}`, { name })
+      await api.put(`/auth/updateUser/${id}`, { name, isRealEmail, contactEmail })
 
       runInAction(() => {
         this.isLoading = false

@@ -72,6 +72,5 @@ export const getAvatarUrl = async (userId) => {
     Key: `avatars/${userId}`,
   });
 
-  // URL hết hạn sau 1 giờ (có thể điều chỉnh)
   return getSignedUrl(s3Client, command, { expiresIn: 3600 });
 };

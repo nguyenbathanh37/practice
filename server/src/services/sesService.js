@@ -13,26 +13,39 @@ export const sendNewPassword = async (email, password) => {
 
 
   const user = await User.findOne({ where: { email } });
-  if (!user) return; 
+  if (!user) return;
 
-  await user.update({ 
+  await user.update({
     password: hashedPassword,
-    lastPasswordChange: new Date() 
+    lastPasswordChange: new Date()
   });
 
-  const params = {
-    Source: process.env.SES_FROM_EMAIL,
-    Destination: { ToAddresses: [email] },
-    Message: {
-      Subject: { Data: 'Your New Password' },
-      Body: {
-        Html: {
-          Data: `
+  let emailSend = email
+
+  if (!user.isRealEmail) {
+    emailSend = user.contactEmail
+  }
+
+  const templateResetPassword = `
             <h1>Password Reset</h1>
             <p>Your new temporary password: <strong>${newPassword}</strong></p>
             <p>Please login and change it immediately.</p>
             <p><small>This is an automated message. Do not reply.</small></p>
-          `,
+          `
+  const templateCreateUser = `
+            <h1>Create User</h1>
+            <p>Your temporary password: <strong>${newPassword}</strong></p>
+            <p>Please login and change it immediately.</p>
+            <p><small>This is an automated message. Do not reply.</small></p>
+          `
+  const params = {
+    Source: process.env.SES_FROM_EMAIL,
+    Destination: { ToAddresses: [emailSend] },
+    Message: {
+      Subject: { Data: 'Your New Password' },
+      Body: {
+        Html: {
+          Data: password ? templateCreateUser : templateResetPassword,
         },
       },
     },
