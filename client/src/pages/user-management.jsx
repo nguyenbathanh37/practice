@@ -162,6 +162,7 @@ const UserManagement = observer(() => {
       dataIndex: "id",
       key: "id",
       sorter: true,
+      hidden: true,
     },
     {
       title: "Name",
