@@ -10,7 +10,6 @@ const ExportManagement = observer(() => {
   const { userStore } = useStores()
   const [, setForceUpdate] = useState(0)
 
-  // Force update every second to update the expiry timers
   useEffect(() => {
     const timer = setInterval(() => {
       setForceUpdate((prev) => prev + 1)

@@ -12,10 +12,10 @@ const Login = observer(() => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-  
+
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = (message, description) => {
-    api.open({
+  const openNotification = (type, message, description) => {
+    api[type]({
       message: message,
       description: description,
       duration: 5,
@@ -29,19 +29,22 @@ const Login = observer(() => {
 
     if (success) {
       openNotification(
+        "success",
         "Login Successful",
         "Welcome back!",
       )
-      const currentUser = await authStore.getCurrentUser()
-      if (currentUser) {
+      const success = await authStore.getCurrentUser()
+      if (success) {
+        await authStore.fetchAvatarUrl(authStore.currentUser.id)
         navigate("/dashboard")
       }
     } else {
       openNotification(
+        "error",
         "Login Failed",
         "Invalid email or password.",
       )
-    }  
+    }
   }
 
   return (
@@ -81,7 +84,7 @@ const Login = observer(() => {
             </Button>
           </Form.Item>
         </Form>
-{/* 
+        {/* 
         <div className="login-footer">
           <p>Em hay quên lười nhập 😁😁😁</p>
           <p>Email: admin@example.com</p>

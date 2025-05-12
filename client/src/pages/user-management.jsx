@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Table, Button, Input, Space, Modal, Form, Typography, Tooltip, Checkbox } from "antd"
+import { Table, Button, Input, Space, Modal, Form, Typography, Tooltip, Checkbox, notification } from "antd"
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExportOutlined, KeyOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
@@ -19,6 +19,15 @@ const UserManagement = observer(() => {
   const [userToDelete, setUserToDelete] = useState(null)
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false)
   const [userToResetPassword, setUserToResetPassword] = useState(null)
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (type, message, description) => {
+    api[type]({
+      message: message,
+      description: description,
+      duration: 5,
+    });
+  };
 
   useEffect(() => {
     userStore.fetchUsers()
@@ -63,9 +72,19 @@ const UserManagement = observer(() => {
       const values = await form.validateFields()
 
       if (editingUser) {
-        await userStore.updateUser(editingUser.id, values.name, !values.isRealEmail, values.contactEmail)
+        const updateStatus = await userStore.updateUser(editingUser.id, values.name, !values.isRealEmail, values.contactEmail)
+        if (updateStatus) {
+          openNotification("success", "User Updated", "User updated successfully.")
+        } else {
+          openNotification("error", "User Update Failed", "Failed to update user.")
+        }
       } else {
-        await userStore.createUser(values.email, values.name, !values.isRealEmail, values.contactEmail)
+        const createStatus = await userStore.createUser(values.email, values.name, !values.isRealEmail, values.contactEmail)
+        if (createStatus) {
+          openNotification("success", "User Created", "User created successfully.")
+        } else {
+          openNotification("error", "User Creation Failed", "Failed to create user.")
+        }
       }
 
       setIsModalVisible(false)
@@ -103,9 +122,14 @@ const UserManagement = observer(() => {
 
   const handleDeleteModalConfirm = async () => {
     if (userToDelete) {
-      await userStore.deleteUser(userToDelete.id)
+      const deleteStatus = await userStore.deleteUser(userToDelete.id)
       setIsDeleteModalVisible(false)
       setUserToDelete(null)
+      if (deleteStatus) {
+        openNotification("success", "User Deleted", "User deleted successfully.")
+      } else {
+        openNotification("error", "User Deletion Failed", "Failed to delete user.")
+      }
     }
   }
 
@@ -121,9 +145,14 @@ const UserManagement = observer(() => {
 
   const handleResetPasswordModalConfirm = async () => {
     if (userToResetPassword) {
-      await userStore.resetPassword(userToResetPassword.email, userToResetPassword.userId)
+      const resetStatus = await userStore.resetPassword(userToResetPassword.email, userToResetPassword.userId)
       setIsResetPasswordModalVisible(false)
       setUserToResetPassword(null)
+      if (resetStatus) {
+        openNotification("success", "Password Reset", "Password reset successfully.")
+      } else {
+        openNotification("error", "Password Reset Failed", "Failed to reset password.")
+      }
     }
   }
 
@@ -173,6 +202,7 @@ const UserManagement = observer(() => {
 
   return (
     <div className="user-management-container">
+      {contextHolder}
       <div className="page-header">
         <Title level={2}>User Management</Title>
         <div className="header-actions">

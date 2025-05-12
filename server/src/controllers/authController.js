@@ -21,11 +21,13 @@ const forgotPasswordSchema = yup.object().shape({
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    await loginSchema.validate({ email, password });
+    const unHashedPassword = Buffer.from(password, 'base64').toString('utf-8');
+    await loginSchema.validate({ email, password: unHashedPassword });
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(unHashedPassword, user.password);
+    console.log(`Comparing passwords: ${unHashedPassword} with ${user.password}`);
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '1h' });

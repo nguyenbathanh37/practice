@@ -41,8 +41,9 @@ class AuthStore {
     // this.isLoading = true
 
     try {
-      const response = await api.post("/auth/login", { email, password })
-
+      const hashPassword = window.btoa(password) 
+      const response = await api.post("/auth/login", { email, password: hashPassword })
+      
       runInAction(() => {
         this.setToken(response.data.token)
         this.isAuthenticated = true
@@ -56,9 +57,9 @@ class AuthStore {
       message.success("Login successful")
       return true
     } catch (error) {
-      runInAction(() => {
-        // this.isLoading = false
-      })
+      // runInAction(() => {
+      //   // this.isLoading = false
+      // })
 
       message.error("Login failed. Please check your credentials.")
       return false

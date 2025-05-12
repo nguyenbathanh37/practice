@@ -15,8 +15,8 @@ const Profile = observer(() => {
   const [isRealEmailChecked, setIsRealEmailChecked] = useState(!authStore.currentUser?.isRealEmail || false)
 
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = (message, description) => {
-    api.open({
+  const openNotification = (type, message, description) => {
+    api[type]({
       message: message,
       description: description,
       duration: 5,
@@ -40,13 +40,13 @@ const Profile = observer(() => {
 
     if (success) {
       openNotification(
-        "Login Successful",
-        "Welcome back!",
+        "success",
+        "Update Profile Successful",
       )
     } else {
       openNotification(
-        "Login Failed",
-        "Invalid email or password.",
+        "error",
+        "Update Profile Failed",
       )
     } 
   }
@@ -107,6 +107,7 @@ const Profile = observer(() => {
 
   return (
     <div className="profile-container">
+      {contextHolder}
       <Title level={2}>My Profile</Title>
 
       <Card className="profile-card">

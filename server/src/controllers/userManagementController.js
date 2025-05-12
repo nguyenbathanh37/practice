@@ -5,16 +5,16 @@ import { sendNewPassword } from "../services/sesService.js";
 import * as yup from 'yup';
 
 const createUserSchema = yup.object().shape({
-    email: yup.string().email().required('Email is required'),
-    name: yup.string().required('Name is required'),
+    email: yup.string().email().required(),
+    name: yup.string().required(),
     isRealEmail: yup.boolean().optional(),
-    contactEmail: yup.string().email().optional(),
+    contactEmail: yup.string().email().nullable().optional(),
 });
 
 const updateUserSchema = yup.object().shape({
-    name: yup.string().optional(),
-    isRealEmail: yup.boolean().optional(),
-    contactEmail: yup.string().email().optional(),
+    name: yup.string().strict().optional(),
+    contactEmail: yup.string().strict().email().nullable().optional(),
+    isRealEmail: yup.boolean().strict().optional(),
 });
 
 const listUsersSchema = yup.object().shape({
