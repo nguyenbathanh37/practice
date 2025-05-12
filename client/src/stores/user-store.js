@@ -9,8 +9,8 @@ class UserStore {
   pageSize = 10
   isLoading = false
   searchTerm = ""
-  sortField = "name"
-  sortOrder = "asc"
+  sortField = "createdAt"
+  sortOrder = "desc"
   authStore = null
   exports = []
   exportLoading = false
