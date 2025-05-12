@@ -81,12 +81,12 @@ const Login = observer(() => {
             </Button>
           </Form.Item>
         </Form>
-
+{/* 
         <div className="login-footer">
           <p>Em hay quên lười nhập 😁😁😁</p>
           <p>Email: admin@example.com</p>
           <p>Password: Admin1234@</p>
-        </div>
+        </div> */}
       </Card>
     </div>
   )
