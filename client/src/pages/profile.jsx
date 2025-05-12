@@ -32,6 +32,9 @@ const Profile = observer(() => {
 
   const onFinish = async (values) => {
     setLoading(true)
+    if (fileList.length > 0) {
+      handleUpload()
+    }
     const success = await authStore.updateProfile(values.name, !isRealEmailChecked, values.contactEmail)
     setLoading(false)
 
@@ -120,7 +123,7 @@ const Profile = observer(() => {
                   Select Image
                 </Button>
               </Upload>
-              {fileList.length > 0 && (
+              {/* {fileList.length > 0 && (
                 <Button
                   type="primary"
                   onClick={handleUpload}
@@ -130,7 +133,7 @@ const Profile = observer(() => {
                 >
                   Upload
                 </Button>
-              )}
+              )} */}
             </div>
           </div>
           <div className="profile-info">

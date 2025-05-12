@@ -14,9 +14,6 @@ class AuthStore {
   constructor() {
     makeAutoObservable(this)
     this.initFromStorage()
-    if (this.currentUser) {
-      this.fetchAvatarUrl(this.currentUser.id)
-    }
   }
 
   initFromStorage() {
@@ -25,6 +22,9 @@ class AuthStore {
     if (token) {
       this.token = token
       this.isAuthenticated = true
+      this.getCurrentUser().then((success) => {
+        this.fetchAvatarUrl(this.currentUser.id)
+      })
     }
   }
 
