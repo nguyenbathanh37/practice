@@ -38,7 +38,7 @@ class AuthStore {
   }
 
   async login(email, password) {
-    this.isLoading = true
+    // this.isLoading = true
 
     try {
       const response = await api.post("/auth/login", { email, password })
@@ -46,7 +46,7 @@ class AuthStore {
       runInAction(() => {
         this.setToken(response.data.token)
         this.isAuthenticated = true
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       if (response.data.user) {
@@ -57,7 +57,7 @@ class AuthStore {
       return true
     } catch (error) {
       runInAction(() => {
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       message.error("Login failed. Please check your credentials.")
@@ -110,7 +110,7 @@ class AuthStore {
   }
 
   async updateProfile(name, isRealEmail=true, contactEmail = null) {
-    this.isLoading = true
+    // this.isLoading = true
 
     try {
       await api.post("/auth/updateProfile", { name, isRealEmail, contactEmail })
@@ -122,14 +122,14 @@ class AuthStore {
           this.currentUser.contactEmail = contactEmail
           this.setCurrentUser(this.currentUser)
         }
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       message.success("Profile updated successfully")
       return true
     } catch (error) {
       runInAction(() => {
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       message.error("Failed to update profile")

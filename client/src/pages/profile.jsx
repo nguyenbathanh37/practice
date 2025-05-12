@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Card, Form, Input, Button, Typography, Divider, Avatar, Upload, message, Spin, Checkbox } from "antd"
+import { notification, Card, Form, Input, Button, Typography, Divider, Avatar, Upload, message, Spin, Checkbox } from "antd"
 import { UserOutlined, UploadOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
@@ -14,6 +14,15 @@ const Profile = observer(() => {
   const [previewImage, setPreviewImage] = useState(null)
   const [isRealEmailChecked, setIsRealEmailChecked] = useState(!authStore.currentUser?.isRealEmail || false)
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (message, description) => {
+    api.open({
+      message: message,
+      description: description,
+      duration: 5,
+    });
+  };
+
   useEffect(() => {
 
     if (authStore.currentUser && !authStore.avatarUrl) {
@@ -23,8 +32,20 @@ const Profile = observer(() => {
 
   const onFinish = async (values) => {
     setLoading(true)
-    await authStore.updateProfile(values.name, !isRealEmailChecked, values.contactEmail)
+    const success = await authStore.updateProfile(values.name, !isRealEmailChecked, values.contactEmail)
     setLoading(false)
+
+    if (success) {
+      openNotification(
+        "Login Successful",
+        "Welcome back!",
+      )
+    } else {
+      openNotification(
+        "Login Failed",
+        "Invalid email or password.",
+      )
+    } 
   }
 
   const beforeUpload = (file) => {

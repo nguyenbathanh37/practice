@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 const updateProfileSchema = yup.object().shape({
   name: yup.string().strict().optional(),
-  contactEmail: yup.string().strict().email().optional(),
+  contactEmail: yup.string().strict().email().nullable().optional(),
   isRealEmail: yup.boolean().strict().optional(),
 });
 

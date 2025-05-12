@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Form, Input, Button, Card, Typography } from "antd"
+import { Form, Input, Button, Card, Typography, notification } from "antd"
 import { UserOutlined, LockOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useNavigate } from "react-router-dom"
@@ -12,6 +12,15 @@ const Login = observer(() => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (message, description) => {
+    api.open({
+      message: message,
+      description: description,
+      duration: 5,
+    });
+  };
 
   const onFinish = async (values) => {
     setLoading(true)
@@ -19,15 +28,25 @@ const Login = observer(() => {
     setLoading(false)
 
     if (success) {
+      openNotification(
+        "Login Successful",
+        "Welcome back!",
+      )
       const currentUser = await authStore.getCurrentUser()
       if (currentUser) {
         navigate("/dashboard")
       }
-    }
+    } else {
+      openNotification(
+        "Login Failed",
+        "Invalid email or password.",
+      )
+    }  
   }
 
   return (
     <div className="login-container">
+      {contextHolder}
       <Card className="login-card">
         <div className="login-header">
           <Title level={2}>User Management System</Title>
