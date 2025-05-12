@@ -12,6 +12,7 @@ import PrivateRoute from "./components/private-route"
 import AppLayout from "./components/app-layout"
 import ExportManagement from "./pages/export-management"
 import ChangePasswordExpired from "./pages/change-password-expired"
+import ForgotPassword from "./pages/forgot-password"
 
 const App = observer(() => {
   const { authStore } = useStores()
@@ -28,6 +29,7 @@ const App = observer(() => {
         <Routes>
           <Route path="/login" element={authStore.isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/change-password-expired" element={<ChangePasswordExpired />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
           <Route
             path="/"
             element={

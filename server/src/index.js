@@ -9,6 +9,7 @@ import healthRoutes from './routes/healthRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import changePasswordExpiredRoutes from './routes/changePasswordExpiredRoutes.js';
+import forgotPasswordRoutes from './routes/forgotPasswordRoutes.js';
 
 const api = lambdaApi();
 
@@ -16,6 +17,7 @@ api.use(corsMiddleware);
 
 api.register(authRoutes, { prefix: '/auth' });
 api.register(healthRoutes, { prefix: '/auth' });
+api.register(forgotPasswordRoutes, { prefix: '/auth' });
 
 api.use(authenticate);
 api.register(changePasswordExpiredRoutes, { prefix: '/auth' });

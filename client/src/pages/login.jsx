@@ -79,6 +79,10 @@ const Login = observer(() => {
           </Form.Item>
 
           <Form.Item>
+              <a href="/forgot-password">Forgot password</a>
+          </Form.Item>
+
+          <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} block>
               Log in
             </Button>

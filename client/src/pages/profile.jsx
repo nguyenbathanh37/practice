@@ -155,7 +155,7 @@ const Profile = observer(() => {
           </Form.Item>
 
           {isRealEmailChecked && (
-            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }]}>
+            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }]}>
               <Input />
             </Form.Item>
           )}

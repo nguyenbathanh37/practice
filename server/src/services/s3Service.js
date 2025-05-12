@@ -32,6 +32,7 @@ export const generateUploadURL = async (userId) => {
 
 export const generateExport = async () => {
   const users = await User.findAll({
+    where: { isDelete: false },
     attributes: ['name', 'email', 'createdAt'],
   });
 

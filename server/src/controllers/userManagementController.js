@@ -33,7 +33,8 @@ export const listUsers = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const where = {
-            isDelete: false
+            isDelete: false,
+            id: { [Op.ne]: req.user.id }
         };
         if (search) {
             where[Op.or] = [

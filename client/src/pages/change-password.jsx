@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Card, Form, Input, Button, Typography } from "antd"
+import { Card, Form, Input, Button, Typography, notification } from "antd"
 import { LockOutlined } from "@ant-design/icons"
 import { observer } from "mobx-react-lite"
 import { useStores } from "../stores"
@@ -11,18 +11,37 @@ const ChangePassword = observer(() => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (type, message, description) => {
+    api[type]({
+      message: message,
+      description: description,
+      duration: 5,
+    });
+  };
+
   const onFinish = async (values) => {
     setLoading(true)
     const success = await authStore.changePassword(values.oldPassword, values.newPassword)
     setLoading(false)
 
     if (success) {
+      openNotification(
+        "success",
+        "Change Password Successful",
+      )
       form.resetFields()
+    } else {
+      openNotification(
+        "error",
+        "Change Password Failed",
+      )
     }
   }
 
   return (
     <div className="change-password-container">
+      {contextHolder}
       <Title level={2}>Change Password</Title>
 
       <Card className="password-card">

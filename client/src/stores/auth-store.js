@@ -40,7 +40,6 @@ class AuthStore {
   }
 
   async login(email, password) {
-    // this.isLoading = true
 
     try {
       const hashPassword = window.btoa(password)
@@ -49,7 +48,6 @@ class AuthStore {
       runInAction(() => {
         this.setToken(response.data.token)
         this.isAuthenticated = true
-        // this.isLoading = false
       })
 
       if (response.data.user) {
@@ -59,9 +57,6 @@ class AuthStore {
       message.success("Login successful")
       return true
     } catch (error) {
-      // runInAction(() => {
-      //   // this.isLoading = false
-      // })
 
       message.error("Login failed. Please check your credentials.")
       return false
@@ -113,7 +108,7 @@ class AuthStore {
   }
 
   async updateProfile(name, isRealEmail = true, contactEmail = null) {
-    // this.isLoading = true
+    this.isLoading = true
 
     try {
       await api.post("/auth/updateProfile", { name, isRealEmail, contactEmail })
@@ -125,14 +120,14 @@ class AuthStore {
           this.currentUser.contactEmail = contactEmail
           this.setCurrentUser(this.currentUser)
         }
-        // this.isLoading = false
+        this.isLoading = false
       })
 
       message.success("Profile updated successfully")
       return true
     } catch (error) {
       runInAction(() => {
-        // this.isLoading = false
+        this.isLoading = false
       })
 
       message.error("Failed to update profile")
@@ -176,22 +171,13 @@ class AuthStore {
   }
 
   async changePassword(oldPassword, newPassword) {
-    this.isLoading = true
 
     try {
       await api.post("/auth/changePassword", { oldPassword, newPassword })
 
-      runInAction(() => {
-        this.isLoading = false
-      })
-
       message.success("Password changed successfully")
       return true
     } catch (error) {
-      runInAction(() => {
-        this.isLoading = false
-      })
-
       message.error("Failed to change password")
       return false
     }
@@ -219,6 +205,28 @@ class AuthStore {
       })
 
       message.error("Failed to change password")
+      return false
+    }
+  }
+
+  async forgotPassword(email) {
+    this.isLoading = true
+
+    try {
+      await api.post("/auth/forgot-password", { email })
+
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.success(`New password has been sent to ${email}`)
+      return true
+    } catch (error) {
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.error("Failed to reset password")
       return false
     }
   }
