@@ -23,7 +23,9 @@ class AuthStore {
       this.token = token
       this.isAuthenticated = true
       this.getCurrentUser().then((success) => {
-        this.fetchAvatarUrl(this.currentUser.id)
+        if (success) {
+          this.fetchAvatarUrl(this.currentUser.id)
+        }
       })
     }
   }
@@ -41,9 +43,9 @@ class AuthStore {
     // this.isLoading = true
 
     try {
-      const hashPassword = window.btoa(password) 
+      const hashPassword = window.btoa(password)
       const response = await api.post("/auth/login", { email, password: hashPassword })
-      
+
       runInAction(() => {
         this.setToken(response.data.token)
         this.isAuthenticated = true
@@ -110,7 +112,7 @@ class AuthStore {
     }
   }
 
-  async updateProfile(name, isRealEmail=true, contactEmail = null) {
+  async updateProfile(name, isRealEmail = true, contactEmail = null) {
     // this.isLoading = true
 
     try {
@@ -184,6 +186,32 @@ class AuthStore {
       })
 
       message.success("Password changed successfully")
+      return true
+    } catch (error) {
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.error("Failed to change password")
+      return false
+    }
+  }
+
+  async changePasswordExpired(oldPassword, newPassword) {
+    this.isLoading = true
+
+    try {
+      await api.post("/auth/ChangePasswordExpired", { oldPassword, newPassword })
+
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.success("Password changed successfully")
+      localStorage.removeItem("passwordExpired")
+      localStorage.removeItem("lastPasswordChange")
+      localStorage.removeItem("token")
+      window.location.href = "/dashboard"
       return true
     } catch (error) {
       runInAction(() => {

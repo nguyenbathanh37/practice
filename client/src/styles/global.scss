@@ -134,7 +134,9 @@ body {
 
 .profile-container {
   .profile-card {
-    max-width: 600px;
+    // max-width: 600px;
+    width: 100%;
+    padding: 0 15%;
     
     .profile-header {
       display: flex;
@@ -169,7 +171,25 @@ body {
 
 .change-password-container {
   .password-card {
-    max-width: 600px;
+    // max-width: 600px;
+    padding: 0 15%;
+  }
+}
+
+.change-password-expired-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $layout-body-background;
+  .password-card {
+    width: 100%;
+    max-width: 400px;
+
+    .change-password-expired-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
   }
 }
 

@@ -24,16 +24,42 @@ api.interceptors.request.use(
 )
 
 // Add a response interceptor to handle auth errors
+// api.interceptors.response.use(
+//   (response) => {
+//     return response
+//   },
+//   (error) => {
+//     if (error.response && error.response.status === 401) {
+//       // Clear local storage and redirect to login
+//       localStorage.removeItem("token")
+//       window.location.href = "/login"
+//     }
+//     return Promise.reject(error)
+//   },
+// )
+
 api.interceptors.response.use(
   (response) => {
     return response
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear local storage and redirect to login
-      localStorage.removeItem("token")
-      // localStorage.removeItem("user")
-      window.location.href = "/login"
+    if (error.response) {
+      if (error.response.data && error.response.data.code === "PASSWORD_EXPIRED") {
+        localStorage.setItem("passwordExpired", "true")
+        localStorage.setItem("lastPasswordChange", error.response.data.lastPasswordChange)
+
+        if (window.location.pathname !== "/change-password-expired" && window.location.pathname !== "/login") {
+          window.location.href = "/change-password-expired"
+        }
+
+        return Promise.reject(error)
+      }
+      if (error.response.status === 401) {
+        localStorage.removeItem("token")
+        localStorage.removeItem("passwordExpired")
+        localStorage.removeItem("lastPasswordChange")
+        window.location.href = "/login"
+      }
     }
     return Promise.reject(error)
   },

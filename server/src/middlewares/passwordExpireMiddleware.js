@@ -4,7 +4,7 @@ export const checkPasswordExpiry = async (req, res, next) => {
     const user = await User.findByPk(req.user.id);
 
     const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    threeMonthsAgo.setMinutes(threeMonthsAgo.getMinutes() - 20);
 
     if (user.lastPasswordChange < threeMonthsAgo) {
         return res.status(403).json({
