@@ -184,14 +184,14 @@ class AuthStore {
   }
 
   async changePasswordExpired(oldPassword, newPassword) {
-    this.isLoading = true
+    // this.isLoading = true
 
     try {
       await api.post("/auth/ChangePasswordExpired", { oldPassword, newPassword })
 
-      runInAction(() => {
-        this.isLoading = false
-      })
+      // runInAction(() => {
+      //   this.isLoading = false
+      // })
 
       message.success("Password changed successfully")
       localStorage.removeItem("passwordExpired")
@@ -200,9 +200,9 @@ class AuthStore {
       window.location.href = "/dashboard"
       return true
     } catch (error) {
-      runInAction(() => {
-        this.isLoading = false
-      })
+      // runInAction(() => {
+      //   this.isLoading = false
+      // })
 
       message.error("Failed to change password")
       return false
