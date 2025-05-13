@@ -18,15 +18,18 @@ class AuthStore {
 
   initFromStorage() {
     const token = localStorage.getItem("token")
+    const passwordExpired = localStorage.getItem("passwordExpired")
 
     if (token) {
       this.token = token
       this.isAuthenticated = true
-      this.getCurrentUser().then((success) => {
-        if (success) {
-          this.fetchAvatarUrl(this.currentUser.id)
-        }
-      })
+      if (!passwordExpired) {
+        this.getCurrentUser().then((success) => {
+          if (success) {
+            this.fetchAvatarUrl(this.currentUser.id)
+          }
+        })
+      }
     }
   }
 

@@ -45,6 +45,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       if (error.response.data && error.response.data.code === "PASSWORD_EXPIRED") {
+        localStorage.setItem("passwordExpired", "true")
+        localStorage.setItem("lastPasswordChange", error.response.data.lastPasswordChange)
 
         if (window.location.pathname !== "/change-password-expired" && window.location.pathname !== "/login") {
           window.location.href = "/change-password-expired"
@@ -54,6 +56,8 @@ api.interceptors.response.use(
       }
       if (error.response.status === 401) {
         localStorage.removeItem("token")
+        localStorage.removeItem("passwordExpired")
+        localStorage.removeItem("lastPasswordChange")
         window.location.href = "/login"
       }
     }
