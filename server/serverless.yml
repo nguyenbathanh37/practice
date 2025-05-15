@@ -130,7 +130,4 @@ resources:
             - Effect: Allow
               Principal: "*"
               Action: "*"
-              Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-storage/*"
-              Condition:
-                StringEquals:
-                  aws:UserAgent: "PracticeApp"    
+              Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-storage/*"  

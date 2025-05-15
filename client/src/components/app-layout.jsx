@@ -39,11 +39,11 @@ const AppLayout = observer(() => {
       icon: <UserOutlined />,
       label: <Link to="/profile">Profile</Link>,
     },
-    {
-      key: "changePassword",
-      icon: <LockOutlined />,
-      label: <Link to="/change-password">Change Password</Link>,
-    },
+    // {
+    //   key: "changePassword",
+    //   icon: <LockOutlined />,
+    //   label: <Link to="/change-password">Change Password</Link>,
+    // },
     {
       key: "logout",
       icon: <LogoutOutlined />,

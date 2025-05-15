@@ -19,6 +19,11 @@ class UserStore {
   constructor(authStore) {
     makeAutoObservable(this)
     this.authStore = authStore
+
+    const savedExports = localStorage.getItem("exports")
+    if (savedExports) {
+      this.exports = JSON.parse(savedExports)
+    }
   }
 
   setSearchTerm(term) {
@@ -164,6 +169,7 @@ class UserStore {
       runInAction(() => {
         this.exports.unshift(exportItem)
         this.exportLoading = false
+        localStorage.setItem("exports", JSON.stringify(this.exports))
       })
 
       message.success("Export generated successfully")
@@ -185,6 +191,7 @@ class UserStore {
     if (validExports.length !== this.exports.length) {
       runInAction(() => {
         this.exports = validExports
+        localStorage.setItem("exports", JSON.stringify(this.exports))
       })
     }
   }

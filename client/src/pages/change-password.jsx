@@ -42,7 +42,7 @@ const ChangePassword = observer(() => {
   return (
     <div className="change-password-container">
       {contextHolder}
-      <Title level={2}>Change Password</Title>
+      {/* <Title level={2}>Change Password</Title> */}
 
       <Card className="password-card">
         <Form form={form} layout="vertical" onFinish={onFinish}>

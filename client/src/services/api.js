@@ -60,6 +60,26 @@ api.interceptors.response.use(
         localStorage.removeItem("lastPasswordChange")
         window.location.href = "/login"
       }
+      if (error.response.status === 403 && error.response.data.message === "Token expired") {
+        const refreshToken = localStorage.getItem("refreshToken")
+        if (refreshToken) {
+          return api
+            .post("/auth/refreshToken", { refreshToken })
+            .then((response) => {
+              const newToken = response.data.token
+              const newRefreshToken = response.data.refreshToken
+              localStorage.setItem("refreshToken", newRefreshToken)
+              localStorage.setItem("token", newToken)
+              error.config.headers.Authorization = `Bearer ${newToken}`
+              return api.request(error.config)
+            })
+            .catch(() => {
+              localStorage.removeItem("token")
+              localStorage.removeItem("refreshToken")
+              window.location.href = "/login"
+            })
+        }
+      }
     }
     return Promise.reject(error)
   },

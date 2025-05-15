@@ -5,6 +5,7 @@ import { api, uploadFileToS3 } from "../services/api"
 class AuthStore {
   currentUser = null
   token = null
+  refreshToken = null
   isAuthenticated = false
   isLoading = false
   avatarUploading = false
@@ -18,10 +19,12 @@ class AuthStore {
 
   initFromStorage() {
     const token = localStorage.getItem("token")
+    const refreshToken = localStorage.getItem("refreshToken")
     const passwordExpired = localStorage.getItem("passwordExpired")
 
     if (token) {
       this.token = token
+      this.refreshToken = refreshToken
       this.isAuthenticated = true
       if (!passwordExpired) {
         this.getCurrentUser().then((success) => {
@@ -33,9 +36,11 @@ class AuthStore {
     }
   }
 
-  setToken(token) {
+  setToken(token, refreshToken) {
     this.token = token
+    this.refreshToken = refreshToken
     localStorage.setItem("token", token)
+    localStorage.setItem("refreshToken", refreshToken)
   }
 
   setCurrentUser(user) {
@@ -49,7 +54,7 @@ class AuthStore {
       const response = await api.post("/auth/login", { email, password: hashPassword })
 
       runInAction(() => {
-        this.setToken(response.data.token)
+        this.setToken(response.data.token, response.data.refreshToken)
         this.isAuthenticated = true
       })
 
@@ -200,6 +205,7 @@ class AuthStore {
       localStorage.removeItem("passwordExpired")
       localStorage.removeItem("lastPasswordChange")
       localStorage.removeItem("token")
+      localStorage.removeItem("refreshToken")
       window.location.href = "/dashboard"
       return true
     } catch (error) {
@@ -240,6 +246,7 @@ class AuthStore {
     this.isAuthenticated = false
     this.avatarUrl = null
     localStorage.removeItem("token")
+    localStorage.removeItem("refreshToken")
     message.success("Logged out successfully")
   }
 }

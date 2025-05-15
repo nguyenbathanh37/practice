@@ -43,7 +43,7 @@ const App = observer(() => {
             <Route path="users" element={<UserManagement />} />
             <Route path="exports" element={<ExportManagement />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="change-password" element={<ChangePassword />} />
+            {/* <Route path="change-password" element={<ChangePassword />} /> */}
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

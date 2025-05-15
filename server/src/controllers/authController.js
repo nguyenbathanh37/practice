@@ -27,11 +27,13 @@ export const login = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(unHashedPassword, user.password);
-    console.log(`Comparing passwords: ${unHashedPassword} with ${user.password}`);
+
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '1h' });
-    return res.json({ token });
+    const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '10m' });
+    const refreshToken = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '30m' });
+
+    return res.json({ token, refreshToken });
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: error.message });
@@ -52,5 +54,23 @@ export const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: error.message });
     }
     return res.response({ error: 'Failed to process request' }).code(500);
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  try {
+    if (!refreshToken) return res.status(400).json({ message: "refreshToken is required" });
+
+    jwt.verify(refreshToken, secret, (err, decoded) => {
+      if (err) return res.status(401).json({ message: "Invalid or expired refreshToken" });
+
+      const newToken = jwt.sign({ id: decoded.id, email: decoded.email }, secret, { expiresIn: '10m' });
+      const newRefreshToken = jwt.sign({ id: decoded.id, email: decoded.email }, secret, { expiresIn: '30m' });
+
+      return res.json({ token: newToken, refreshToken: newRefreshToken });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };

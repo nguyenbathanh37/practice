@@ -33,7 +33,7 @@ export const listUsers = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const where = {
-            isDelete: false,
+            // isDelete: false,
             id: { [Op.ne]: req.user.id }
         };
         if (search) {
@@ -130,8 +130,9 @@ export const deleteUser = async (req, res) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        user.isDelete = true;
-        await user.save();
+        // user.isDelete = true;
+        // await user.save();
+        user.destroy();
 
         return res.json({ success: true });
     } catch (error) {
