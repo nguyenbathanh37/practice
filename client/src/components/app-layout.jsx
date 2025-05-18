@@ -87,7 +87,7 @@ const AppLayout = observer(() => {
           <div className="header-right">
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <div className="user-info">
-                <span className="user-name">{authStore.currentUser?.name}</span>
+                <span className="user-name">{authStore.currentUser?.adminName}</span>
                 {authStore.avatarLoading ? (
                   <Spin size="small" />
                 ) : (

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
+import Admin from '../models/admin.js';
 
 export const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -10,12 +10,12 @@ export const authenticate = async (req, res, next) => {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.id, {
+    const admin = await Admin.findByPk(decoded.id, {
       attributes: { exclude: ['password'] },
     });
-    if (!user) throw new Error();
+    if (!admin) throw new Error();
 
-    req.user = user;
+    req.admin = admin;
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {

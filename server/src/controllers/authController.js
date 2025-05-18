@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import User from '../models/user.js';
+import Admin from '../models/admin.js';
 import dotenv from 'dotenv';
-import { sendNewPassword } from '../services/sesService.js';
+import { sendResetPassword } from '../services/sesService.js';
 import * as yup from 'yup';
 
 dotenv.config();
@@ -23,15 +23,16 @@ export const login = async (req, res) => {
   try {
     const unHashedPassword = Buffer.from(password, 'base64').toString('utf-8');
     await loginSchema.validate({ email, password: unHashedPassword });
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const isMatch = await bcrypt.compare(unHashedPassword, user.password);
+    const admin = await Admin.findOne({ where: { loginId: email } });
+    if (!admin) return res.status(404).json({ message: "Admin not found" });
+
+    const isMatch = await bcrypt.compare(unHashedPassword, admin.password);
 
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '10m' });
-    const refreshToken = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '30m' });
+    const token = jwt.sign({ id: admin.id }, secret, { expiresIn: '10m' });
+    const refreshToken = jwt.sign({ id: admin.id }, secret, { expiresIn: '30m' });
 
     return res.json({ token, refreshToken });
   } catch (error) {
@@ -47,7 +48,7 @@ export const forgotPassword = async (req, res) => {
   try {
     await forgotPasswordSchema.validate({ email });
 
-    await sendNewPassword(email);
+    await sendResetPassword(email);
     return { success: true };
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -56,6 +57,30 @@ export const forgotPassword = async (req, res) => {
     return res.response({ error: 'Failed to process request' }).code(500);
   }
 };
+
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, secret);
+    const admin = await Admin.findByPk(decoded.id);
+
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await admin.update({
+      password: hashedPassword,
+      lastPasswordChange: new Date(),
+    });
+
+    return res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid or expired token' });
+  }
+};
+
 
 export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;

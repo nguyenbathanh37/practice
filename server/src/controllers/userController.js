@@ -1,6 +1,7 @@
 import { generateUploadURL, getAvatarUrl } from "../services/s3Service.js";
 import bcrypt from "bcryptjs";
-import User from "../models/user.js";
+import Admin from "../models/admin.js";
+
 import * as yup from 'yup';
 
 const updateProfileSchema = yup.object().shape({
@@ -19,16 +20,16 @@ export const updateProfile = async (req, res) => {
     await updateProfileSchema.validate(req.body);
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name', 'contactEmail', 'isRealEmail'];
+    const allowedUpdates = ['adminName', 'contactEmail', 'isRealEmail'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
       return res.status(400).send({ error: 'Invalid updates!' });
     }
 
-    updates.forEach(update => req.user[update] = req.body[update]);
-    await req.user.save();
-    res.json(req.user);
+    updates.forEach(update => req.admin[update] = req.body[update]);
+    await req.admin.save();
+    res.json(req.admin);
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ error: error.message });
@@ -43,22 +44,22 @@ export const changePassword = async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    const userId = req.user.id;
+    const adminId = req.admin.id;
 
-    const user = await User.findByPk(userId);
-    if (!user) return res.response({ error: 'User not found' }).code(404);
+    const admin = await Admin.findByPk(adminId);
+    if (!admin) return res.response({ error: 'Admin not found' }).code(404);
 
     if (!oldPassword || !newPassword) {
       return res.status(400).json({ error: 'Old password and new password are required.' });
     }
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(oldPassword, admin.password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Old password is incorrect.' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await user.update({
+    await admin.update({
       password: hashedPassword,
       lastPasswordChange: new Date(),
     });
@@ -74,7 +75,7 @@ export const changePassword = async (req, res) => {
 
 export const uploadAvatar = async (req, res) => {
   try {
-    const uploadURL = await generateUploadURL(req.user.id);
+    const uploadURL = await generateUploadURL(req.admin.id);
     res.json({ uploadURL });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -83,13 +84,13 @@ export const uploadAvatar = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const user = req.user;
+    const admin = req.admin;
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found.' });
     }
 
-    res.status(200).json(user);
+    res.status(200).json(admin);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -97,8 +98,8 @@ export const getMe = async (req, res) => {
 
 export const getAvatar = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const avatarUrl = await getAvatarUrl(userId);
+    const { adminId } = req.params;
+    const avatarUrl = await getAvatarUrl(adminId);
     res.json({ avatarUrl });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get avatar' });

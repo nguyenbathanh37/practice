@@ -1,10 +1,10 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
-const User = sequelize.define('User', {
+const Admin = sequelize.define('Admin', {
   loginId: { type: DataTypes.STRING, unique: true, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
-  userName: { type: DataTypes.STRING },
+  adminName: { type: DataTypes.STRING },
   avatar: { type: DataTypes.STRING },
   lastPasswordChange: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   contactEmail: { type: DataTypes.STRING },
@@ -12,4 +12,4 @@ const User = sequelize.define('User', {
   employeeId: { type: DataTypes.STRING, unique: true, allowNull: false },
 });
 
-export default User;
+export default Admin;

@@ -12,7 +12,7 @@ const ProfileTab = observer(() => {
   const [loading, setLoading] = useState(false)
   const [fileList, setFileList] = useState([])
   const [previewImage, setPreviewImage] = useState(null)
-  const [isRealEmailChecked, setIsRealEmailChecked] = useState(!authStore.currentUser?.isRealEmail || false)
+  const [isRealEmailChecked, setIsRealEmailChecked] = useState(authStore.currentUser?.isRealEmail || false)
 
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (type, message, description) => {
@@ -35,7 +35,7 @@ const ProfileTab = observer(() => {
     if (fileList.length > 0) {
       handleUpload()
     }
-    const success = await authStore.updateProfile(values.name, !isRealEmailChecked, values.contactEmail)
+    const success = await authStore.updateProfile(values.name, isRealEmailChecked, values.contactEmail)
     setLoading(false)
 
     if (success) {
@@ -127,23 +127,31 @@ const ProfileTab = observer(() => {
             </div>
           </div>
           <div className="profile-info">
-            <Title level={3}>{authStore.currentUser?.name}</Title>
-            <p>{authStore.currentUser?.email}</p>
+            <Title level={3}>{authStore.currentUser?.adminName}</Title>
+            <p>{authStore.currentUser?.loginId}</p>
           </div>
         </div>
 
         <Divider />
 
-        <Form form={form} layout="vertical" initialValues={{ name: authStore.currentUser?.name, isRealEmail: !authStore.currentUser?.isRealEmail, contactEmail: authStore.currentUser?.contactEmail }} onFinish={onFinish}>
-          <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please input your name!" }]}>
+        <Form form={form} layout="vertical" initialValues={{employeeId: authStore.currentUser?.employeeId , name: authStore.currentUser?.adminName, loginId: authStore.currentUser?.loginId , isRealEmail: authStore.currentUser?.isRealEmail, contactEmail: authStore.currentUser?.contactEmail }} onFinish={onFinish}>
+          <Form.Item name="employeeId" label="Employee Id">
+            <Input disabled/>
+          </Form.Item>
+          
+          <Form.Item name="name" label="Admin Name" rules={[{ required: true, message: "Please input your name!" }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="isRealEmail" valuePropName="checked" label={null} onChange={(e) => setIsRealEmailChecked(e.target.checked)}>
-            <Checkbox>Real Email</Checkbox>
+          <Form.Item name="loginId" label="Login Id">
+            <Input disabled/>
           </Form.Item>
 
-          {isRealEmailChecked && (
+          <Form.Item name="isRealEmail" valuePropName="checked" label={null} onChange={(e) => setIsRealEmailChecked(e.target.checked)}>
+            <Checkbox disabled={!authStore.currentUser?.isRealEmail}>Real Email</Checkbox>
+          </Form.Item>
+
+          {!isRealEmailChecked && (
             <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }]}>
               <Input />
             </Form.Item>

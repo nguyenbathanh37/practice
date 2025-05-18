@@ -43,8 +43,8 @@ class AuthStore {
     localStorage.setItem("refreshToken", refreshToken)
   }
 
-  setCurrentUser(user) {
-    this.currentUser = user
+  setCurrentUser(admin) {
+    this.currentUser = admin
   }
 
   async login(email, password) {
@@ -58,8 +58,8 @@ class AuthStore {
         this.isAuthenticated = true
       })
 
-      if (response.data.user) {
-        this.fetchAvatarUrl(response.data.user.id)
+      if (response.data.admin) {
+        this.fetchAvatarUrl(response.data.admin.id)
       }
 
       message.success("Login successful")
@@ -88,20 +88,23 @@ class AuthStore {
         this.isLoading = false
       })
 
-      message.error("Failed to fetch user data")
+      message.error("Failed to fetch admin data")
       return false
     }
   }
 
-  async fetchAvatarUrl(userId) {
+  async fetchAvatarUrl(adminId) {
     this.avatarLoading = true
 
     try {
-      const response = await api.get(`/auth/getAvatar/${userId}`)
+      const response = await api.get(`/auth/getAvatar/${adminId}`)
 
       runInAction(() => {
         this.avatarUrl = response.data.avatarUrl
         this.avatarLoading = false
+        console.log("adminId: ", adminId);
+        console.log("avatar: ", response.data.avatarUrl);
+
       })
 
       return true
@@ -119,11 +122,11 @@ class AuthStore {
     this.isLoading = true
 
     try {
-      await api.post("/auth/updateProfile", { name, isRealEmail, contactEmail })
+      await api.post("/auth/updateProfile", { adminName: name, isRealEmail, contactEmail })
 
       runInAction(() => {
         if (this.currentUser) {
-          this.currentUser.name = name
+          this.currentUser.adminName = name
           this.currentUser.isRealEmail = isRealEmail
           this.currentUser.contactEmail = contactEmail
           this.setCurrentUser(this.currentUser)
@@ -239,6 +242,32 @@ class AuthStore {
       return false
     }
   }
+
+  async resetPassword(token, newPassword) {
+    this.isLoading = true
+
+    try {
+      await api.post("/auth/resetPassword", {
+        token,
+        newPassword,
+      })
+
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.success("Password has been reset successfully")
+      return true
+    } catch (error) {
+      runInAction(() => {
+        this.isLoading = false
+      })
+
+      message.error("Failed to reset password. The link may be expired or invalid.")
+      return false
+    }
+  }
+
 
   logout() {
     this.token = null

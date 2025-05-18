@@ -14,7 +14,7 @@ const UserManagement = observer(() => {
   const [editingUser, setEditingUser] = useState(null)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [searchInput, setSearchInput] = useState("")
-  const [isRealEmailChecked, setIsRealEmailChecked] = useState(false)
+  const [isRealEmailChecked, setIsRealEmailChecked] = useState(true)
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
   const [userToDelete, setUserToDelete] = useState(null)
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false)
@@ -53,17 +53,22 @@ const UserManagement = observer(() => {
   const showCreateModal = () => {
     setEditingUser(null)
     form.resetFields()
+    form.setFieldsValue({
+      isRealEmail: true,
+    })
     setIsModalVisible(true)
   }
 
   const showEditModal = (user) => {
     setEditingUser(user)
     form.setFieldsValue({
-      name: user.name,
-      isRealEmail: !user.isRealEmail,
+      employeeId: user.employeeId,
+      loginId: user.loginId,
+      userName: user.userName,
+      isRealEmail: user.isRealEmail,
       contactEmail: user.contactEmail,
     })
-    setIsRealEmailChecked(!user.isRealEmail)
+    setIsRealEmailChecked(user.isRealEmail)
     setIsModalVisible(true)
   }
 
@@ -72,14 +77,14 @@ const UserManagement = observer(() => {
       const values = await form.validateFields()
 
       if (editingUser) {
-        const updateStatus = await userStore.updateUser(editingUser.id, values.name, !values.isRealEmail, values.contactEmail)
+        const updateStatus = await userStore.updateUser(editingUser.id, values.userName, values.contactEmail)
         if (updateStatus) {
           openNotification("success", "User Updated", "User updated successfully.")
         } else {
           openNotification("error", "User Update Failed", "Failed to update user.")
         }
       } else {
-        const createStatus = await userStore.createUser(values.email, values.name, !values.isRealEmail, values.contactEmail)
+        const createStatus = await userStore.createUser(values.employeeId, values.loginId, values.userName, values.isRealEmail, values.contactEmail)
         if (createStatus) {
           openNotification("success", "User Created", "User created successfully.")
         } else {
@@ -165,16 +170,29 @@ const UserManagement = observer(() => {
       hidden: true,
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Employee Id",
+      dataIndex: "employeeId",
+      key: "employeeId",
       sorter: true,
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "User Name",
+      dataIndex: "userName",
+      key: "userName",
       sorter: true,
+    },
+    {
+      title: "Login Id",
+      dataIndex: "loginId",
+      key: "loginId",
+      sorter: true,
+    },
+    {
+      title: "isRealEmail",
+      dataIndex: "isRealEmail",
+      key: "isRealEmail",
+      sorter: true,
+      hidden: true,
     },
     {
       title: "Actions",
@@ -185,13 +203,13 @@ const UserManagement = observer(() => {
             <Button icon={<EditOutlined />} onClick={() => showEditModal(record)} type="text" />
           </Tooltip>
 
-          <Tooltip title="Reset Password">
+          {/* <Tooltip title="Reset Password">
             <Button
               icon={<KeyOutlined />}
               type="text"
               onClick={() => showResetPasswordModal(record)}
             />
-          </Tooltip>
+          </Tooltip> */}
 
           <Tooltip title="Delete">
             <Button icon={<DeleteOutlined />} type="text" danger onClick={() => showDeleteModal(record)} />
@@ -260,28 +278,33 @@ const UserManagement = observer(() => {
         confirmLoading={userStore.isLoading}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please input the name!" }]}>
+          <Form.Item name="employeeId" label="Employee Id" rules={[{ required: true, message: "Please input the employee Id!" }]}>
+            <Input disabled={editingUser} />
+          </Form.Item>
+
+          <Form.Item name="userName" label="User Name" rules={[{ required: true, message: "Please input the username!" }]}>
             <Input />
           </Form.Item>
 
-          {!editingUser && (
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[
-                { required: true, message: "Please input the email!" },
-                { type: "email", message: "Please enter a valid email!" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          )}
 
-          <Form.Item name="isRealEmail" valuePropName="checked" label={null} onChange={(e) => setIsRealEmailChecked(e.target.checked)}>
-            <Checkbox>Real Email</Checkbox>
+          <Form.Item
+            name="loginId"
+            label="Login Id"
+            rules={[
+              { required: true, message: "Please input the email!" },
+              { type: "email", message: "Please enter a valid email!" },
+            ]}
+          >
+            <Input disabled={editingUser} />
           </Form.Item>
 
-          {isRealEmailChecked && (
+
+          <Form.Item name="isRealEmail" valuePropName="checked" label={null} onChange={(e) => setIsRealEmailChecked(e.target.checked)}>
+            <Checkbox disabled={editingUser}>Real Email</Checkbox>
+          </Form.Item>
+
+
+          {!isRealEmailChecked && (
             <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }]}>
               <Input />
             </Form.Item>

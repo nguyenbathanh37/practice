@@ -11,7 +11,7 @@ export default (api) => {
     api.put('/updateUser/:id', updateUser);
     api.delete('/deleteUser/:id', deleteUser);
     api.get('/getMe', getMe);
-    api.get('/getAvatar/:userId', getAvatar);
+    api.get('/getAvatar/:adminId', getAvatar);
     api.post('/forgotPassword', forgotPassword);
 
     return api;

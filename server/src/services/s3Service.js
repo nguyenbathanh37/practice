@@ -3,14 +3,15 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dotenv from "dotenv";
 dotenv.config();
 import User from "../models/user.js";
+import Admin from "../models/admin.js";
 import ExcelJS from 'exceljs';
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
 });
 
-export const generateUploadURL = async (userId) => {
-  const avatarKey = `avatars/${userId}`;
+export const generateUploadURL = async (adminId) => {
+  const avatarKey = `avatars/${adminId}`;
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET,
@@ -22,9 +23,9 @@ export const generateUploadURL = async (userId) => {
     expiresIn: 3600,
   });
 
-  await User.update(
+  await Admin.update(
     { avatarUrl: `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/${avatarKey}` },
-    { where: { id: userId } }
+    { where: { id: adminId } }
   );
 
   return uploadURL;
@@ -33,15 +34,15 @@ export const generateUploadURL = async (userId) => {
 export const generateExport = async () => {
   const users = await User.findAll({
     // where: { isDelete: false },
-    attributes: ['name', 'email', 'createdAt'],
+    attributes: ['userName', 'loginId', 'createdAt'],
   });
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Users');
   
   worksheet.columns = [
-    { header: 'Name', key: 'name', width: 30 },
-    { header: 'Email', key: 'email', width: 30 },
+    { header: 'User Name', key: 'userName', width: 30 },
+    { header: 'Login Id', key: 'loginId', width: 30 },
     { header: 'Created At', key: 'createdAt', width: 20 },
   ];
   
@@ -67,10 +68,10 @@ export const generateExport = async () => {
   };
 };
 
-export const getAvatarUrl = async (userId) => {
+export const getAvatarUrl = async (adminId) => {
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET,
-    Key: `avatars/${userId}`,
+    Key: `avatars/${adminId}`,
   });
 
   return getSignedUrl(s3Client, command, { expiresIn: 3600 });

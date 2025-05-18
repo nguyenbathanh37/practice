@@ -1,16 +1,16 @@
-import User from "../models/user.js";
+import Admin from "../models/admin.js";
 
 export const checkPasswordExpiry = async (req, res, next) => {
-    const user = await User.findByPk(req.user.id);
+    const admin = await Admin.findByPk(req.admin.id);
 
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
-    if (user.lastPasswordChange < threeMonthsAgo) {
+    if (admin.lastPasswordChange < threeMonthsAgo) {
         return res.status(403).json({
             code: 'PASSWORD_EXPIRED',
             message: 'Password needs to be changed every 3 months',
-            lastPasswordChange: user.lastPasswordChange
+            lastPasswordChange: admin.lastPasswordChange
         });
     }
 

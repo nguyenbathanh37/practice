@@ -1,53 +1,42 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import User from '../models/user.js';
+import Admin from '../models/admin.js';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 dotenv.config();
+import jwt from 'jsonwebtoken';
 
 const ses = new SESClient({ region: 'ap-southeast-1' });
 
-export const sendNewPassword = async (email, password) => {
+export const sendResetPassword = async (email) => {
 
-  const newPassword = password || Math.random().toString(36).slice(-8);
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-
-  const user = await User.findOne({ where: { email } });
-  if (!user) return;
-
-  await user.update({
-    password: hashedPassword,
-    lastPasswordChange: new Date()
-  });
+  const admin = await Admin.findOne({ where: { loginId: email } });
+  if (!admin) return;
 
   let emailSend = email
 
-  if (!user.isRealEmail) {
-    emailSend = user.contactEmail
+  if (!admin.isRealEmail) {
+    emailSend = admin.contactEmail
   }
 
-  const templateResetPassword = `
-            <h1>Password Reset</h1>
-            <p>Your new temporary password: <strong>${newPassword}</strong></p>
-            <p>Please login and change it immediately.</p>
-            <p><small>This is an automated message. Do not reply.</small></p>
-          `
-  const templateCreateUser = `
-            <h1>Create User</h1>
-            <p>Your temporary password: <strong>${newPassword}</strong></p>
-            <p>Please login and change it immediately.</p>
-            <p><small>This is an automated message. Do not reply.</small></p>
-          `
+  const token = jwt.sign({id: admin.id, loginId: emailSend}, process.env.JWT_SECRET, {
+    expiresIn: '10m',
+  });
+
+  const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+  const emailTemplate = `
+      <h2>Reset your password</h2>
+      <p>You requested a password reset. Click the link below:</p>
+      <a href="${resetLink}">${resetLink}</a>
+      <p>This link is valid for 1 hour.</p>
+    `;
   const params = {
     Source: process.env.SES_FROM_EMAIL,
     Destination: { ToAddresses: [emailSend] },
     Message: {
-      Subject: { Data: 'Your New Password' },
-      Body: {
-        Html: {
-          Data: password ? templateCreateUser : templateResetPassword,
-        },
-      },
+      Subject: { Data: 'Password Reset Request' },
+      Body: { Html: { Data: emailTemplate } },
     },
   };
 

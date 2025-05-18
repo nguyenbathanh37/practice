@@ -13,6 +13,7 @@ import AppLayout from "./components/app-layout"
 import ExportManagement from "./pages/export-management"
 import ChangePasswordExpired from "./pages/change-password-expired"
 import ForgotPassword from "./pages/forgot-password"
+import ResetPassword from "./pages/reset-password"
 
 const App = observer(() => {
   const { authStore } = useStores()
@@ -30,6 +31,7 @@ const App = observer(() => {
           <Route path="/login" element={authStore.isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/change-password-expired" element={<ChangePasswordExpired />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
           <Route
             path="/"
             element={

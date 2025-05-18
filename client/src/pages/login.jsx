@@ -34,7 +34,7 @@ const Login = observer(() => {
         "Welcome back!",
       )
       const success = await authStore.getCurrentUser()
-      if (success) {
+      if (success) {   
         await authStore.fetchAvatarUrl(authStore.currentUser.id)
         navigate("/dashboard")
       }

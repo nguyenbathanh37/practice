@@ -1,12 +1,12 @@
 import User from "../models/user.js";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
-import { sendNewPassword } from "../services/sesService.js";
+import { sendResetPassword } from "../services/sesService.js";
 import * as yup from 'yup';
 
 const createUserSchema = yup.object().shape({
-    email: yup.string().email().required(),
-    name: yup.string().required(),
+    loginId: yup.string().email().required(),
+    userName: yup.string().required(),
     isRealEmail: yup.boolean().optional(),
     contactEmail: yup.string().email().nullable().optional(),
 });
@@ -32,14 +32,11 @@ export const listUsers = async (req, res) => {
 
         const offset = (page - 1) * limit;
 
-        const where = {
-            // isDelete: false,
-            id: { [Op.ne]: req.user.id }
-        };
+        const where = {};
         if (search) {
             where[Op.or] = [
-                { name: { [Op.like]: `%${search}%` } },
-                { email: { [Op.like]: `%${search}%` } }
+                { userName: { [Op.like]: `%${search}%` } },
+                { loginId: { [Op.like]: `%${search}%` } }
             ];
         }
 
@@ -48,7 +45,7 @@ export const listUsers = async (req, res) => {
             const [field, direction] = sort.split('_');
             order.push([field, direction.toUpperCase()]);
         } else {
-            order.push(['createdAt', 'DESC']);
+            order.push(['updatedAt', 'DESC']);
         }
 
         const { count, rows: users } = await User.findAndCountAll({
@@ -76,21 +73,38 @@ export const listUsers = async (req, res) => {
 export const createUser = async (req, res) => {
     try {
         await createUserSchema.validate(req.body);
-        const { email, name, isRealEmail, contactEmail } = req.body;
+        const { employeeId, loginId, userName, isRealEmail, contactEmail } = req.body;
+
+        const existingUser = await User.findOne({
+            where: {
+                [Op.or]: [
+                    { employeeId },
+                    { loginId }
+                ]
+            }
+        });
+
+        if (existingUser) {
+            const duplicatedField = existingUser.employeeId === employeeId
+                ? 'Employee ID'
+                : 'Login ID';
+            return res.status(409).json({ error: `${duplicatedField} already exists.` });
+        }
 
         const tempPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
         const user = await User.create({
-            email,
-            name,
+            employeeId,
+            loginId,
+            userName,
             isRealEmail,
             contactEmail,
             password: hashedPassword,
             lastPasswordChange: new Date()
         });
 
-        await sendNewPassword(email, tempPassword);
+        // await sendNewPassword(email, tempPassword);
 
         const { password, ...userWithoutPassword } = user.toJSON();
         return res.status(201).json(userWithoutPassword);
@@ -106,15 +120,19 @@ export const updateUser = async (req, res) => {
     try {
         await updateUserSchema.validate(req.body);
         const { id } = req.params;
-        const { name, isRealEmail, contactEmail } = req.body;
+        const { userName, contactEmail } = req.body;
 
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        await user.update({ name, isRealEmail, contactEmail });
+        if (user.isRealEmail && contactEmail !== null) {
+            return res.status(403).json({ error: 'Cannot update contactEmail when isRealEmail is true.' });
+        }
+
+        await user.update({ userName, contactEmail });
 
         const { password, ...userWithoutPassword } = user.toJSON();
-        return res.status(201).json(userWithoutPassword);
+        return res.status(200).json(userWithoutPassword);
     } catch (error) {
         if (error.name === 'ValidationError') {
             return res.status(400).json({ error: error.message });

@@ -9,7 +9,7 @@ class UserStore {
   pageSize = 10
   isLoading = false
   searchTerm = ""
-  sortField = "createdAt"
+  sortField = "updatedAt"
   sortOrder = "desc"
   authStore = null
   exports = []
@@ -75,11 +75,11 @@ class UserStore {
     }
   }
 
-  async createUser(email, name, isRealEmail = true, contactEmail = null) {
+  async createUser(employeeId, loginId, userName, isRealEmail = true, contactEmail = null) {
     this.isLoading = true
 
     try {
-      await api.post("/auth/createUser", { email, name, isRealEmail, contactEmail })
+      await api.post("/auth/createUser", { employeeId, loginId, userName, isRealEmail, contactEmail })
 
       runInAction(() => {
         this.isLoading = false
@@ -98,11 +98,11 @@ class UserStore {
     }
   }
 
-  async updateUser(id, name, isRealEmail = true, contactEmail = null) {
+  async updateUser(id, userName, contactEmail = null) {
     this.isLoading = true
 
     try {
-      await api.put(`/auth/updateUser/${id}`, { name, isRealEmail, contactEmail })
+      await api.put(`/auth/updateUser/${id}`, { userName, contactEmail })
 
       runInAction(() => {
         this.isLoading = false
