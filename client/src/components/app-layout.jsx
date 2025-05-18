@@ -8,7 +8,8 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   LockOutlined,
-  FileExcelOutlined
+  FileExcelOutlined,
+  FileOutlined
 } from "@ant-design/icons"
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
@@ -74,6 +75,13 @@ const AppLayout = observer(() => {
               key: "exports",
               icon: <FileExcelOutlined />,
               label: <Link to="/exports">Export Management</Link>,
+            },
+            {
+              key: "apiDocs",
+              icon: <FileOutlined />,
+              label: <a href="/apiDocs" target="_blank" rel="noopener noreferrer">
+                API Document
+              </a>,
             },
           ]}
         />

@@ -14,6 +14,7 @@ import ExportManagement from "./pages/export-management"
 import ChangePasswordExpired from "./pages/change-password-expired"
 import ForgotPassword from "./pages/forgot-password"
 import ResetPassword from "./pages/reset-password"
+import ApiDocs from "./pages/api-document"
 
 const App = observer(() => {
   const { authStore } = useStores()
@@ -32,6 +33,11 @@ const App = observer(() => {
           <Route path="/change-password-expired" element={<ChangePasswordExpired />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="apiDocs" element={
+            <PrivateRoute>
+              <ApiDocs />
+            </PrivateRoute>
+          } />
           <Route
             path="/"
             element={

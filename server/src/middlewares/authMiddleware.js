@@ -11,7 +11,7 @@ export const authenticate = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await Admin.findByPk(decoded.id, {
-      attributes: { exclude: ['password'] },
+      attributes: { exclude: ['password', 'passwordHistory'] },
     });
     if (!admin) throw new Error();
 

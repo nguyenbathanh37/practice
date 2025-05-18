@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 const updateProfileSchema = yup.object().shape({
   adminName: yup.string().strict().max(30).required(),
+  isRealEmail: yup.boolean().required(),
   contactEmail: yup.string().strict().email().max(111).nullable().optional(),
 });
 
@@ -19,7 +20,7 @@ export const updateProfile = async (req, res) => {
     await updateProfileSchema.validate(req.body);
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['adminName', 'contactEmail'];
+    const allowedUpdates = ['adminName', 'isRealEmail', 'contactEmail'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {

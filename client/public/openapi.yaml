@@ -1,0 +1,963 @@
+openapi: 3.0.0
+info:
+  title: Admin Authentication API
+  description: API for admin authentication, password management, and token refresh
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/auth
+    description: Development server
+tags:
+  - name: Authentication
+    description: Admin authentication and token management
+  - name: Export
+    description: User data export operations
+  - name: Profile
+    description: Admin profile management
+  - name: Users
+    description: User management operations
+paths:
+  /login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate admin and get tokens
+      description: Authenticate an admin with email and password to receive JWT tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Admin email address
+                  maxLength: 111
+                  example: admin@example.com
+                password:
+                  type: string
+                  description: Base64 encoded password (min 10 chars)
+                  minLength: 10
+                  example: "VGhpcyBpcyBhIHNlY3VyZSBwYXNzd29yZDEyMw=="
+              required: [email, password]
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token valid for 10 minutes
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQ3NjA0MDE1LCJleHAiOjE3NDc2MDU4MTV9.I6ekR7LC0YehszQCx7OjRvPNhi-jbsHZ2hyn5iJc-cM"
+                  refreshToken:
+                    type: string
+                    description: Refresh token valid for 30 minutes
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQ3NjA0MDE1LCJleHAiOjE3NDc2MDU4MTV9.I6ekR7LC0YehszQCx7OjRvPNhi-jbsHZ2hyn5iJc-cM"
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "password must be at least 10 characters"
+              examples:
+                InvalidEmail:
+                  value:
+                    message: "email must be a valid email"
+                ShortPassword:
+                  value:
+                    message: "password must be at least 10 characters"
+                MissingField:
+                  value:
+                    message: "email is a required field"
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Invalid credentials"
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Admin not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+                example:
+                  message: "Server error"
+                  error: "Database connection failed"
+  /forgotPassword:
+    post:
+      tags: [Authentication]
+      summary: Request password reset
+      description: Initiate a password reset process for the admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 111
+                  example: admin@example.com
+              required: [email]
+      responses:
+        '200':
+          description: Reset email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                InvalidEmail:
+                  value:
+                    message: "email must be a valid email"
+                LongEmail:
+                  value:
+                    message: "email must be at most 111 characters"
+                MissingEmail:
+                  value:
+                    message: "email is a required field"
+        '500':
+          description: Failed to process request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: "Failed to send reset email"
+  /resetPassword:
+    post:
+      tags: [Authentication]
+      summary: Reset admin password
+      description: Reset admin password using a valid reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Reset token received via email
+                newPassword:
+                  type: string
+                  description: New password (min 10 chars)
+                  example: "newSecurePassword123"
+              required: [token, newPassword]
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password has been reset successfully
+        '400':
+          description: Invalid or expired token / validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                MissingToken:
+                  value:
+                    error: "token is a required field"
+                ShortPassword:
+                  value:
+                    error: "newPassword must be at least 10 characters"
+                InvalidToken:
+                  value:
+                    error: "Invalid or expired token"
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: "Admin not found"
+  /refreshToken:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      description: Get a new access token using a refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Valid refresh token
+              required: [refreshToken]
+      responses:
+        '200':
+          description: Tokens refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: New JWT token valid for 10 minutes
+                  refreshToken:
+                    type: string
+                    description: New refresh token valid for 30 minutes
+                example:
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                MissingRefreshToken:
+                  value:
+                    error: "refreshToken is a required field"
+        '401':
+          description: Invalid or expired refreshToken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: "Invalid or expired refreshToken"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+                example:
+                  message: "Server error"
+                  error: "Token generation failed"
+  
+  /export/users:
+    post:
+      tags: [Export]
+      summary: Export user data to Excel
+      description: Generates an Excel file with user data and returns a temporary download URL
+      responses:
+        '200':
+          description: Export generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  downloadUrl:
+                    type: string
+                    description: Temporary signed URL to download the Excel file
+                    example: "https://bucket.s3.amazonaws.com/exports/user-export-123456.xlsx?X-Amz-Expires=60..."
+                  expiresIn:
+                    type: string
+                    description: URL expiration time in minutes
+                    example: "60"
+        '500':
+          description: Export failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Export failed"
+                  details:
+                    type: string
+                    example: "S3 upload error"
+  /avatar/upload-url:
+    post:
+      tags: [Avatar]
+      summary: Generate avatar upload URL
+      description: Generates a pre-signed URL for uploading admin avatar to S3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adminId:
+                  type: integer
+                  description: ID of the admin uploading the avatar
+                  example: 1
+              required: [adminId]
+      responses:
+        '200':
+          description: Upload URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploadUrl:
+                    type: string
+                    description: Pre-signed URL for uploading the avatar
+                    example: "https://bucket.s3.amazonaws.com/avatars/1?X-Amz-Expires=3600..."
+        '500':
+          description: Failed to generate upload URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to generate upload URL"
+                  details:
+                    type: string
+                    example: "S3 client error"
+  /avatar/{adminId}:
+    get:
+      tags: [Avatar]
+      summary: Get admin avatar URL
+      description: Returns a temporary access URL for admin avatar
+      parameters:
+        - name: adminId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Avatar URL retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
+                    description: Temporary signed URL to access the avatar
+                    example: "https://bucket.s3.amazonaws.com/avatars/1?X-Amz-Expires=3600..."
+        '404':
+          description: Avatar not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Avatar not found"
+        '500':
+          description: Failed to get avatar URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to get avatar URL"
+                  details:
+                    type: string
+                    example: "S3 client error"
+
+  /admin/me:
+    get:
+      tags: [Profile]
+      summary: Get current admin profile
+      description: Retrieve authenticated admin's profile information
+      responses:
+        '200':
+          description: Admin profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Admin not found."
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Database connection failed"
+
+    patch:
+      tags: [Profile]
+      summary: Update admin profile
+      description: Update admin's profile information (name and contact email)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adminName:
+                  type: string
+                  maxLength: 30
+                  example: "John Doe"
+                contactEmail:
+                  type: string
+                  format: email
+                  maxLength: 111
+                  nullable: true
+                  example: "contact@example.com"
+              required:
+                - adminName
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '400':
+          description: Validation error or invalid updates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  ValidationError:
+                    value:
+                      error: "adminName is a required field"
+                  InvalidUpdates:
+                    value:
+                      error: "Invalid updates!"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to update profile"
+
+  /admin/change-password:
+    post:
+      tags: [Authentication]
+      summary: Change admin password
+      description: |
+        Change admin password with security checks:
+        - Verify old password
+        - Ensure new password is different from current
+        - Check against last 3 passwords
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  minLength: 10
+                  description: Current password
+                  example: "currentPassword123"
+                newPassword:
+                  type: string
+                  minLength: 10
+                  description: New password (must differ from last 3 passwords)
+                  example: "newSecurePassword456"
+              required:
+                - oldPassword
+                - newPassword
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password updated successfully."
+        '400':
+          description: Password validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  ValidationError:
+                    value:
+                      error: "newPassword must be at least 10 characters"
+                  IncorrectPassword:
+                    value:
+                      error: "Old password is incorrect."
+                  SamePassword:
+                    value:
+                      error: "New password must be different from current password."
+                  PasswordHistory:
+                    value:
+                      error: "New password cannot be the same as any of your last 3 passwords."
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Admin not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+  /users:
+    get:
+      tags: [Users]
+      summary: List users with pagination
+      description: |
+        Get paginated list of users with optional search and sorting.
+        Default sorting is by updatedAt in descending order.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          description: Items per page
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term for userName or loginId
+        - name: sort
+          in: query
+          schema:
+            type: string
+            pattern: '^[a-zA-Z]+_(asc|desc)$'
+            example: "userName_asc"
+          description: Sort field and direction (field_asc or field_desc)
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  page:
+                    type: integer
+                    example: 1
+                  totalPages:
+                    type: integer
+                    example: 10
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  InvalidSort:
+                    value:
+                      error: "Sort must be in the format field_asc or field_desc"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Database query failed"
+
+    post:
+      tags: [Users]
+      summary: Create a new user
+      description: |
+        Create a new user with automatically generated temporary password.
+        Password will be emailed to the user if isRealEmail is true.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  maxLength: 20
+                  example: "EMP12345"
+                loginId:
+                  type: string
+                  format: email
+                  maxLength: 111
+                  example: "user@example.com"
+                userName:
+                  type: string
+                  maxLength: 30
+                  example: "John Doe"
+                isRealEmail:
+                  type: boolean
+                  default: false
+                  description: Whether the loginId is a real email address
+                contactEmail:
+                  type: string
+                  format: email
+                  maxLength: 111
+                  nullable: true
+                  example: "contact@example.com"
+              required:
+                - employeeId
+                - loginId
+                - userName
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  EmailConflict:
+                    value:
+                      error: "Login ID and Contact Email must not be the same."
+                  ValidationError:
+                    value:
+                      error: "loginId must be a valid email"
+        '409':
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  EmployeeIdExists:
+                    value:
+                      error: "Employee ID already exists."
+                  LoginIdExists:
+                    value:
+                      error: "Login ID already exists."
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to create user"
+
+  /users/{id}:
+    patch:
+      tags: [Users]
+      summary: Update user information
+      description: Update user profile information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  maxLength: 30
+                  example: "Updated Name"
+                contactEmail:
+                  type: string
+                  format: email
+                  maxLength: 111
+                  nullable: true
+                  example: "newcontact@example.com"
+              required:
+                - userName
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                examples:
+                  EmailConflict:
+                    value:
+                      error: "Login ID and Contact Email must not be the same."
+                  RealEmailConflict:
+                    value:
+                      error: "Cannot update contactEmail when isRealEmail is true."
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to update user"
+
+    delete:
+      tags: [Users]
+      summary: Delete a user
+      description: Permanently delete a user account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to delete user"
+
+components:
+  schemas:
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        adminName:
+          type: string
+          example: "John Doe"
+        loginId:
+          type: string
+          format: email
+          example: "admin@example.com"
+        contactEmail:
+          type: string
+          format: email
+          nullable: true
+          example: "contact@example.com"
+        avatarUrl:
+          type: string
+          format: url
+          nullable: true
+          example: "https://bucket.s3.amazonaws.com/avatars/1"
+        lastPasswordChange:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        employeeId:
+          type: string
+          example: "EMP12345"
+        loginId:
+          type: string
+          format: email
+          example: "user@example.com"
+        userName:
+          type: string
+          example: "John Doe"
+        isRealEmail:
+          type: boolean
+          example: true
+        contactEmail:
+          type: string
+          format: email
+          nullable: true
+          example: "contact@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-02T00:00:00Z"
+        lastPasswordChange:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

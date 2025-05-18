@@ -16,3 +16,14 @@ export const exportUserData = async (req, res) => {
     });
   }
 };
+
+export const apiDocument = async (req, res) => {
+  const filePath = path.join(__dirname, 'private', 'report.html');
+  try {
+    const html = fs.readFileSync(filePath, 'utf8');
+    res.type('text/html').send(html);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Can not read HTML file');
+  }
+};
