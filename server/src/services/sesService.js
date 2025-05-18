@@ -23,7 +23,7 @@ export const sendResetPassword = async (email) => {
     expiresIn: '10m',
   });
 
-  const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+  const resetLink = `https://main.d1f1g3lb2shy3p.amplifyapp.com/reset-password?token=${token}`;
 
   const emailTemplate = `
       <h2>Reset your password</h2>
