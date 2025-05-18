@@ -10,6 +10,17 @@ const Admin = sequelize.define('Admin', {
   contactEmail: { type: DataTypes.STRING },
   isRealEmail: { type: DataTypes.BOOLEAN, defaultValue: false },
   employeeId: { type: DataTypes.STRING, unique: true, allowNull: false },
+  passwordHistory: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('passwordHistory');
+      return rawValue ? JSON.parse(rawValue) : [];
+    },
+    set(value) {
+      this.setDataValue('passwordHistory', JSON.stringify(value || []));
+    }
+  }
 });
 
 export default Admin;

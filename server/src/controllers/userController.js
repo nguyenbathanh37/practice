@@ -43,33 +43,62 @@ export const changePassword = async (req, res) => {
     await changePasswordSchema.validate(req.body);
 
     const { oldPassword, newPassword } = req.body;
-
     const adminId = req.admin.id;
 
     const admin = await Admin.findByPk(adminId);
-    if (!admin) return res.response({ error: 'Admin not found' }).code(404);
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
 
-    if (!oldPassword || !newPassword) {
-      return res.status(400).json({ error: 'Old password and new password are required.' });
-    }
-    const isMatch = await bcrypt.compare(oldPassword, admin.password);
-    if (!isMatch) {
+    // Verify old password
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, admin.password);
+    if (!isOldPasswordValid) {
       return res.status(400).json({ error: 'Old password is incorrect.' });
     }
 
+    // Check if new password is same as current
+    const isSameAsCurrent = await bcrypt.compare(newPassword, admin.password);
+    if (isSameAsCurrent) {
+      return res.status(400).json({
+        error: 'New password must be different from current password.'
+      });
+    }
+
+    // Check against last 3 passwords
+    const passwordHistory = admin.passwordHistory;
+    const isUsedBefore = await Promise.all(
+      passwordHistory.slice(0, 3).map(async oldHash =>
+        await bcrypt.compare(newPassword, oldHash)
+      )
+    );
+
+    if (isUsedBefore.includes(true)) {
+      return res.status(400).json({
+        error: 'New password cannot be the same as any of your last 3 passwords.'
+      });
+    }
+
+    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password history (keep max 3 entries)
+    const updatedHistory = [
+      admin.password, // current password becomes first in history
+      ...passwordHistory.slice(0, 2) // keep only 2 most recent
+    ];
 
     await admin.update({
       password: hashedPassword,
       lastPasswordChange: new Date(),
+      passwordHistory: updatedHistory
     });
 
-    res.status(200).json({ message: 'Password updated successfully.' });
+    return res.status(200).json({ message: 'Password updated successfully.' });
+
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ error: error.message });
     }
-    res.status(500).json({ error: error.message });
+    console.error('Password change error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 

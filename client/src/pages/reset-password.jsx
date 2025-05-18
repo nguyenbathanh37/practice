@@ -33,6 +33,7 @@ const ResetPassword = observer(() => {
 
         if (success) {
             form.resetFields()
+            navigate("/login");
         }
     }
 

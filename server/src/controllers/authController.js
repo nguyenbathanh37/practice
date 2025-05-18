@@ -18,6 +18,15 @@ const forgotPasswordSchema = yup.object().shape({
   email: yup.string().strict().email().required(),
 });
 
+const resetPasswordSchema = yup.object().shape({
+  token: yup.string().required(),
+  newPassword: yup.string().strict().min(8).required(),
+});
+
+const refreshTokenSchema = yup.object().shape({
+  refreshToken: yup.string().required(),
+});
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -49,12 +58,12 @@ export const forgotPassword = async (req, res) => {
     await forgotPasswordSchema.validate({ email });
 
     await sendResetPassword(email);
-    return { success: true };
+    return res.json({ success: true });
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: error.message });
     }
-    return res.response({ error: 'Failed to process request' }).code(500);
+    return res.status(500).json({ error: 'Failed to process request' });
   }
 };
 
@@ -62,6 +71,7 @@ export const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
+    await resetPasswordSchema.validate({ token, newPassword });
     const decoded = jwt.verify(token, secret);
     const admin = await Admin.findByPk(decoded.id);
 
@@ -77,6 +87,9 @@ export const resetPassword = async (req, res) => {
 
     return res.status(200).json({ message: 'Password has been reset successfully' });
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
+    }
     return res.status(400).json({ error: 'Invalid or expired token' });
   }
 };
@@ -85,7 +98,7 @@ export const resetPassword = async (req, res) => {
 export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   try {
-    if (!refreshToken) return res.status(400).json({ message: "refreshToken is required" });
+    await refreshTokenSchema.validate({ refreshToken });
 
     jwt.verify(refreshToken, secret, (err, decoded) => {
       if (err) return res.status(401).json({ message: "Invalid or expired refreshToken" });
@@ -96,6 +109,9 @@ export const refreshToken = async (req, res) => {
       return res.json({ token: newToken, refreshToken: newRefreshToken });
     });
   } catch (error) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
+    }
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
