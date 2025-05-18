@@ -75,6 +75,10 @@ export const createUser = async (req, res) => {
         await createUserSchema.validate(req.body);
         const { employeeId, loginId, userName, isRealEmail, contactEmail } = req.body;
 
+        if (loginId === contactEmail) {
+            return res.status(400).json({ error: 'Login ID and Contact Email must not be the same.' });
+        }
+
         const existingUser = await User.findOne({
             where: {
                 [Op.or]: [
@@ -127,6 +131,10 @@ export const updateUser = async (req, res) => {
 
         if (user.isRealEmail && contactEmail !== null) {
             return res.status(403).json({ error: 'Cannot update contactEmail when isRealEmail is true.' });
+        }
+
+        if (user.loginId === contactEmail) {
+            return res.status(400).json({ error: 'Login ID and Contact Email must not be the same.' });
         }
 
         await user.update({ userName, contactEmail });

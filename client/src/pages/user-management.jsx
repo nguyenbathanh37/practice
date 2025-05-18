@@ -56,6 +56,7 @@ const UserManagement = observer(() => {
     form.setFieldsValue({
       isRealEmail: true,
     })
+    setIsRealEmailChecked(true)
     setIsModalVisible(true)
   }
 
