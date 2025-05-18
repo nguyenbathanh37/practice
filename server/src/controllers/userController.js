@@ -5,14 +5,13 @@ import Admin from "../models/admin.js";
 import * as yup from 'yup';
 
 const updateProfileSchema = yup.object().shape({
-  name: yup.string().strict().optional(),
-  contactEmail: yup.string().strict().email().nullable().optional(),
-  isRealEmail: yup.boolean().strict().optional(),
+  adminName: yup.string().strict().max(30).required(),
+  contactEmail: yup.string().strict().email().max(111).nullable().optional(),
 });
 
 const changePasswordSchema = yup.object().shape({
-  oldPassword: yup.string().strict().required(),
-  newPassword: yup.string().strict().min(8).required(),
+  oldPassword: yup.string().strict().min(10).required(),
+  newPassword: yup.string().strict().min(10).required(),
 });
 
 export const updateProfile = async (req, res) => {
@@ -20,7 +19,7 @@ export const updateProfile = async (req, res) => {
     await updateProfileSchema.validate(req.body);
 
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['adminName', 'contactEmail', 'isRealEmail'];
+    const allowedUpdates = ['adminName', 'contactEmail'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {

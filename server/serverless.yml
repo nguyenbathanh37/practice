@@ -107,6 +107,10 @@ resources:
               Status: Enabled
               ExpirationInDays: 1
               Prefix: "exports/"
+            - Id: AutoDeleteAvatar
+              Status: Enabled
+              ExpirationInDays: 1
+              Prefix: "avatars/"
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders:

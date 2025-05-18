@@ -10,17 +10,17 @@ dotenv.config();
 const secret = process.env.JWT_SECRET;
 
 const loginSchema = yup.object().shape({
-  email: yup.string().strict().email().required(),
-  password: yup.string().strict().min(8).required(),
+  email: yup.string().strict().email().max(111).required(),
+  password: yup.string().strict().min(10).required(),
 });
 
 const forgotPasswordSchema = yup.object().shape({
-  email: yup.string().strict().email().required(),
+  email: yup.string().strict().email().max(111).required(),
 });
 
 const resetPasswordSchema = yup.object().shape({
   token: yup.string().required(),
-  newPassword: yup.string().strict().min(8).required(),
+  newPassword: yup.string().strict().min(10).required(),
 });
 
 const refreshTokenSchema = yup.object().shape({

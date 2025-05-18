@@ -49,7 +49,13 @@ const ChangePassword = observer(() => {
           <Form.Item
             name="oldPassword"
             label="Current Password"
-            rules={[{ required: true, message: "Please input your current password!" }]}
+            rules={[{ required: true, message: "Please input your current password!" },
+              { min: 10, message: "Password must be at least 10 characters!" },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                message: "Password must contain uppercase, lowercase, number and special character!",
+              },
+            ]}
           >
             <Input.Password prefix={<LockOutlined />} />
           </Form.Item>
@@ -59,7 +65,7 @@ const ChangePassword = observer(() => {
             label="New Password"
             rules={[
               { required: true, message: "Please input your new password!" },
-              { min: 8, message: "Password must be at least 8 characters!" },
+              { min: 10, message: "Password must be at least 10 characters!" },
               {
                 pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
                 message: "Password must contain uppercase, lowercase, number and special character!",
