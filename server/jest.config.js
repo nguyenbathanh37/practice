@@ -5,3 +5,5 @@ export const transform = {
 };
 export const collectCoverage = true;
 export const coverageDirectory = 'coverage';
+
+// export const setupFilesAfterEnv = ['./jestSetup.js'];

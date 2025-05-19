@@ -109,8 +109,8 @@ export const refreshToken = async (req, res) => {
       return res.json({ token: newToken, refreshToken: newRefreshToken });
     });
   } catch (error) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ error: err.message });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
     }
     return res.status(500).json({ message: "Server error", error: error.message });
   }

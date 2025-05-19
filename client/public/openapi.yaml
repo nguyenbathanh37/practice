@@ -304,7 +304,7 @@ paths:
                   message: "Server error"
                   error: "Token generation failed"
   
-  /export/users:
+  /exportUserData:
     post:
       tags: [Export]
       summary: Export user data to Excel
@@ -341,7 +341,7 @@ paths:
                   details:
                     type: string
                     example: "S3 upload error"
-  /avatar/upload-url:
+  /uploadAvatar:
     post:
       tags: [Avatar]
       summary: Generate avatar upload URL
@@ -383,7 +383,7 @@ paths:
                   details:
                     type: string
                     example: "S3 client error"
-  /avatar/{adminId}:
+  /getAvatar/:adminId:
     get:
       tags: [Avatar]
       summary: Get admin avatar URL
@@ -431,7 +431,7 @@ paths:
                     type: string
                     example: "S3 client error"
 
-  /admin/me:
+  /getMe:
     get:
       tags: [Profile]
       summary: Get current admin profile
@@ -463,8 +463,8 @@ paths:
                   error:
                     type: string
                     example: "Database connection failed"
-
-    patch:
+  /updateProfile:
+    put:
       tags: [Profile]
       summary: Update admin profile
       description: Update admin's profile information (name and contact email)
@@ -521,7 +521,7 @@ paths:
                     type: string
                     example: "Failed to update profile"
 
-  /admin/change-password:
+  /changePassword:
     post:
       tags: [Authentication]
       summary: Change admin password
@@ -604,7 +604,7 @@ paths:
                     type: string
                     example: "Internal server error"
 
-  /users:
+  /listUsers:
     get:
       tags: [Users]
       summary: List users with pagination
@@ -682,7 +682,7 @@ paths:
                   error:
                     type: string
                     example: "Database query failed"
-
+  /createUser:
     post:
       tags: [Users]
       summary: Create a new user
@@ -773,8 +773,8 @@ paths:
                     type: string
                     example: "Failed to create user"
 
-  /users/{id}:
-    patch:
+  /updateUser/:id:
+    put:
       tags: [Users]
       summary: Update user information
       description: Update user profile information
@@ -847,7 +847,7 @@ paths:
                   error:
                     type: string
                     example: "Failed to update user"
-
+  /deleteUser/:id:
     delete:
       tags: [Users]
       summary: Delete a user
