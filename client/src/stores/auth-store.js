@@ -119,7 +119,7 @@ class AuthStore {
   }
 
   async updateProfile(name, isRealEmail = true, contactEmail = null) {
-    this.isLoading = true
+    // this.isLoading = true
 
     try {
       await api.post("/auth/updateProfile", { adminName: name, isRealEmail, contactEmail })
@@ -131,14 +131,14 @@ class AuthStore {
           this.currentUser.contactEmail = contactEmail
           this.setCurrentUser(this.currentUser)
         }
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       message.success("Profile updated successfully")
       return true
     } catch (error) {
       runInAction(() => {
-        this.isLoading = false
+        // this.isLoading = false
       })
 
       message.error("Failed to update profile")

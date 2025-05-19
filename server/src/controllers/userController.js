@@ -27,6 +27,10 @@ export const updateProfile = async (req, res) => {
       return res.status(400).send({ error: 'Invalid updates!' });
     }
 
+    if (req.body.contactEmail && req.body.contactEmail === req.admin.loginId) {
+      return res.status(400).json({ error: 'Contact Email must not be the same as Login ID.' });
+    }
+
     updates.forEach(update => req.admin[update] = req.body[update]);
     await req.admin.save();
     res.json(req.admin);
