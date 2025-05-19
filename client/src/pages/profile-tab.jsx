@@ -139,7 +139,7 @@ const ProfileTab = observer(() => {
             <Input disabled/>
           </Form.Item>
           
-          <Form.Item name="name" label="Admin Name" rules={[{ required: true, message: "Please input your name!" }]}>
+          <Form.Item name="name" label="Admin Name" rules={[{ required: true, message: "Please input your name!" },{ max: 30, message: "Admin Name must be maximum 30 characters!" },]}>
             <Input />
           </Form.Item>
 
@@ -152,7 +152,7 @@ const ProfileTab = observer(() => {
           </Form.Item>
 
           {!isRealEmailChecked && (
-            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }]}>
+            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }, { max: 111, message: "Contact Email must be maximum 111 characters!" }]}>
               <Input />
             </Form.Item>
           )}

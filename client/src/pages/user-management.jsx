@@ -279,11 +279,11 @@ const UserManagement = observer(() => {
         confirmLoading={userStore.isLoading}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="employeeId" label="Employee Id" rules={[{ required: true, message: "Please input the employee Id!" }]}>
+          <Form.Item name="employeeId" label="Employee Id" rules={[{ required: true, message: "Please input the employee Id!" }, { max: 20, message: "Employee Id must be maximum 20 characters!" }]}>
             <Input disabled={editingUser} />
           </Form.Item>
 
-          <Form.Item name="userName" label="User Name" rules={[{ required: true, message: "Please input the username!" }]}>
+          <Form.Item name="userName" label="User Name" rules={[{ required: true, message: "Please input the username!" }, { max: 30, message: "User Name must be maximum 30 characters!" }]}>
             <Input />
           </Form.Item>
 
@@ -294,6 +294,7 @@ const UserManagement = observer(() => {
             rules={[
               { required: true, message: "Please input the email!" },
               { type: "email", message: "Please enter a valid email!" },
+              { max: 111, message: "Login Id must be maximum 111 characters!" }
             ]}
           >
             <Input disabled={editingUser} />
@@ -306,7 +307,7 @@ const UserManagement = observer(() => {
 
 
           {!isRealEmailChecked && (
-            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }]}>
+            <Form.Item name="contactEmail" label="Contact Email" rules={[{ required: true, message: "Please input your contact email!" }, { type: "email", message: "Please enter a valid email!" }, { max: 111, message: "Contact Email must be maximum 111 characters!" }]}>
               <Input />
             </Form.Item>
           )}
