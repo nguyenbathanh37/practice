@@ -110,7 +110,7 @@ describe('Admin Controller', () => {
             // Override the default mock for this test
             require('yup').object = jest.fn().mockImplementation(() => ({
                 shape: jest.fn().mockImplementation(() => ({
-                    validate: jest.fn().mockRejectedValue(new Error('Validation failed'))
+                    validate: jest.fn().mockRejectedValue(new Error('ValidationError'))
                 }))
             }));
 

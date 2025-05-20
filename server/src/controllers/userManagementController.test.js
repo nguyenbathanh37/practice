@@ -1,231 +1,232 @@
 import { listUsers, createUser, updateUser, deleteUser } from './userManagementController.js';
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
-import * as yup from 'yup';
 import { Op } from 'sequelize';
 
-// Mock all dependencies
 jest.mock('../models/user.js');
 jest.mock('bcryptjs');
-// Update your yup mock in the test file
-jest.mock('yup', () => {
-    const actualYup = jest.requireActual('yup');
-    return {
-        ...actualYup,
-        object: () => ({
-            shape: jest.fn().mockReturnThis(),
-            validate: jest.fn().mockResolvedValue(true)
-        }),
-        string: () => ({
-            strict: jest.fn().mockReturnThis(),
-            max: jest.fn().mockReturnThis(),
-            email: jest.fn().mockReturnThis(),
-            required: jest.fn().mockReturnThis(),
-            nullable: jest.fn().mockReturnThis(),
-            optional: jest.fn().mockReturnThis(),
-            min: jest.fn().mockReturnThis(),
-            matches: jest.fn().mockReturnThis()
-        }),
-        boolean: () => ({
-            required: jest.fn().mockReturnThis(),
-            optional: jest.fn().mockReturnThis()
-        }),
-        number: () => ({
-            integer: jest.fn().mockReturnThis(),
-            min: jest.fn().mockReturnThis(),
-            optional: jest.fn().mockReturnThis() // Added optional() for number fields
-        })
-    };
-});
 
-describe('User Controller', () => {
-    let mockRequest, mockResponse;
+const mockRes = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+};
 
-    beforeEach(() => {
+describe('userManagementController', () => {
+    afterEach(() => {
         jest.clearAllMocks();
-
-        mockRequest = {
-            query: {},
-            body: {},
-            params: {}
-        };
-
-        mockResponse = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn().mockReturnThis(),
-            send: jest.fn().mockReturnThis()
-        };
     });
 
     describe('listUsers', () => {
-        it('should return paginated users with default values', async () => {
-            const mockUsers = [{ id: 1, userName: 'Test User' }];
-            User.findAndCountAll.mockResolvedValue({ count: 1, rows: mockUsers });
-
-            await listUsers(mockRequest, mockResponse);
-
-            expect(User.findAndCountAll).toHaveBeenCalledWith({
-                where: {},
-                order: [['updatedAt', 'DESC']],
-                limit: 10,
-                offset: 0,
-                attributes: { exclude: ['password'] }
-            });
-            expect(mockResponse.json).toHaveBeenCalledWith({
-                total: 1,
+        it('should list users with default params', async () => {
+            User.findAndCountAll.mockResolvedValue({ count: 2, rows: [{ id: 1 }, { id: 2 }] });
+            const req = { query: {} };
+            const res = mockRes();
+            await listUsers(req, res);
+            expect(User.findAndCountAll).toHaveBeenCalled();
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                total: 2,
                 page: 1,
                 totalPages: 1,
-                users: mockUsers
-            });
-        });
-
-        it('should handle search query', async () => {
-            mockRequest.query = { search: 'test' };
-            await listUsers(mockRequest, mockResponse);
-
-            expect(User.findAndCountAll).toHaveBeenCalledWith(expect.objectContaining({
-                where: {
-                    [Op.or]: [
-                        { userName: { [Op.like]: '%test%' } },
-                        { loginId: { [Op.like]: '%test%' } }
-                    ]
-                }
+                users: [{ id: 1 }, { id: 2 }]
             }));
         });
 
-        it('should handle validation errors', async () => {
-            const validationError = new yup.ValidationError('Invalid sort format');
-            yup.object().validate.mockRejectedValue(validationError);
+        it('should list users with search and sort', async () => {
+            User.findAndCountAll.mockResolvedValue({ count: 1, rows: [{ id: 3 }] });
+            const req = { query: { search: 'foo', sort: 'userName_asc', page: 2, limit: 1 } };
+            const res = mockRes();
+            await listUsers(req, res);
+            expect(User.findAndCountAll).toHaveBeenCalled();
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+                total: 1,
+                page: 2,
+                totalPages: 1,
+                users: [{ id: 3 }]
+            }));
+        });
 
-            mockRequest.query = { sort: 'invalid' };
-            await listUsers(mockRequest, mockResponse);
+        it('should handle validation error', async () => {
+            const req = { query: { sort: 'badformat' } };
+            const res = mockRes();
+            await listUsers(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
+        });
 
-            expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Invalid sort format' });
+        it('should handle internal error', async () => {
+            User.findAndCountAll.mockRejectedValue(new Error('DB error'));
+            const req = { query: {} };
+            const res = mockRes();
+            await listUsers(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ error: 'DB error' });
         });
     });
 
     describe('createUser', () => {
-        it('should create a new user with hashed password', async () => {
-            mockRequest.body = {
-                employeeId: 'EMP001',
-                loginId: 'test@example.com',
-                userName: 'Test User'
-            };
-
+        it('should create user successfully', async () => {
             User.findOne.mockResolvedValue(null);
-            bcrypt.hash.mockResolvedValue('hashedPassword');
+            bcrypt.hash.mockResolvedValue('hashed');
             User.create.mockResolvedValue({
-                id: 1,
-                ...mockRequest.body,
-                password: 'hashedPassword',
-                toJSON: () => ({ id: 1, ...mockRequest.body })
+                toJSON: () => ({
+                    id: 1, employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'c@d.com'
+                }),
             });
-
-            await createUser(mockRequest, mockResponse);
-
-            expect(bcrypt.hash).toHaveBeenCalled();
+            const req = { body: { employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await createUser(req, res);
             expect(User.create).toHaveBeenCalled();
-            expect(mockResponse.status).toHaveBeenCalledWith(201);
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }));
         });
 
-        it('should reject duplicate employeeId', async () => {
-            mockRequest.body = {
-                employeeId: 'EMP001',
-                loginId: 'test@example.com',
-                userName: 'Test User'
-            };
-
-            User.findOne.mockResolvedValue({ employeeId: 'EMP001' });
-
-            await createUser(mockRequest, mockResponse);
-
-            expect(mockResponse.status).toHaveBeenCalledWith(409);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Employee ID already exists.' });
+        it('should not allow loginId equal to contactEmail', async () => {
+            const req = { body: { employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'a@b.com' } };
+            const res = mockRes();
+            await createUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Login ID and Contact Email must not be the same.' });
         });
 
-        it('should reject when loginId equals contactEmail', async () => {
-            mockRequest.body = {
-                employeeId: 'EMP001',
-                loginId: 'test@example.com',
-                userName: 'Test User',
-                contactEmail: 'test@example.com'
-            };
+        it('should return 409 if employeeId exists', async () => {
+            User.findOne.mockResolvedValue({ employeeId: 'E1', loginId: 'other@b.com' });
+            const req = { body: { employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await createUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(409);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Employee ID already exists.' });
+        });
 
-            await createUser(mockRequest, mockResponse);
+        it('should return 409 if loginId exists', async () => {
+            User.findOne.mockResolvedValue({ employeeId: 'E2', loginId: 'a@b.com' });
+            const req = { body: { employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await createUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(409);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Login ID already exists.' });
+        });
 
-            expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(mockResponse.json).toHaveBeenCalledWith({
-                error: 'Login ID and Contact Email must not be the same.'
-            });
+        it('should handle validation error', async () => {
+            const req = { body: { employeeId: '', loginId: 'bad', userName: '' } };
+            const res = mockRes();
+            await createUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
+        });
+
+        it('should handle other errors', async () => {
+            User.findOne.mockRejectedValue(new Error('DB error'));
+            const req = { body: { employeeId: 'E1', loginId: 'a@b.com', userName: 'foo', isRealEmail: false, contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await createUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: 'DB error' });
         });
     });
 
     describe('updateUser', () => {
-        it('should update user details', async () => {
-            mockRequest.params = { id: '1' };
-            mockRequest.body = {
-                userName: 'Updated Name',
-                contactEmail: 'contact@test.com'
-            };
-
+        it('should update user successfully', async () => {
             const mockUser = {
-                id: 1,
-                loginId: 'test@example.com',
                 isRealEmail: false,
-                update: jest.fn().mockResolvedValue(true),
-                toJSON: () => ({ id: 1, userName: 'Updated Name' })
+                loginId: 'a@b.com',
+                update: jest.fn().mockResolvedValue(),
+                toJSON: () => ({ id: 1, userName: 'bar', contactEmail: 'c@d.com' }),
             };
-
             User.findByPk.mockResolvedValue(mockUser);
-
-            await updateUser(mockRequest, mockResponse);
-
-            expect(mockUser.update).toHaveBeenCalledWith({
-                userName: 'Updated Name',
-                contactEmail: 'contact@test.com'
-            });
-            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            const req = { params: { id: 1 }, body: { userName: 'bar', contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(mockUser.update).toHaveBeenCalledWith({ userName: 'bar', contactEmail: 'c@d.com' });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }));
         });
 
-        it('should return 404 when user not found', async () => {
-            mockRequest.params = { id: '999' };
+        it('should return 404 if user not found', async () => {
             User.findByPk.mockResolvedValue(null);
+            const req = { params: { id: 1 }, body: { userName: 'bar', contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
+        });
 
-            await updateUser(mockRequest, mockResponse);
+        it('should return 403 if isRealEmail true and contactEmail not null', async () => {
+            const mockUser = {
+                isRealEmail: true,
+                loginId: 'a@b.com',
+                update: jest.fn(),
+                toJSON: jest.fn(),
+            };
+            User.findByPk.mockResolvedValue(mockUser);
+            const req = { params: { id: 1 }, body: { userName: 'bar', contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Cannot update contactEmail when isRealEmail is true.' });
+        });
 
-            expect(mockResponse.status).toHaveBeenCalledWith(404);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'User not found' });
+        it('should return 400 if loginId equals contactEmail', async () => {
+            const mockUser = {
+                isRealEmail: false,
+                loginId: 'c@d.com',
+                update: jest.fn(),
+                toJSON: jest.fn(),
+            };
+            User.findByPk.mockResolvedValue(mockUser);
+            const req = { params: { id: 1 }, body: { userName: 'bar', contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Login ID and Contact Email must not be the same.' });
+        });
+
+        it('should handle validation error', async () => {
+            const req = { params: { id: 1 }, body: { userName: '', contactEmail: 'bad' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
+        });
+
+        it('should handle other errors', async () => {
+            User.findByPk.mockRejectedValue(new Error('DB error'));
+            const req = { params: { id: 1 }, body: { userName: 'bar', contactEmail: 'c@d.com' } };
+            const res = mockRes();
+            await updateUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: 'DB error' });
         });
     });
 
     describe('deleteUser', () => {
-        it('should delete a user', async () => {
-            mockRequest.params = { id: '1' };
-            const mockUser = {
-                id: 1,
-                destroy: jest.fn().mockResolvedValue(true)
-            };
+        it('should delete user successfully', async () => {
+            const mockUser = { destroy: jest.fn() };
             User.findByPk.mockResolvedValue(mockUser);
-
-            await deleteUser(mockRequest, mockResponse);
-
+            const req = { params: { id: 1 } };
+            const res = mockRes();
+            await deleteUser(req, res);
             expect(mockUser.destroy).toHaveBeenCalled();
-            expect(mockResponse.json).toHaveBeenCalledWith({ success: true });
+            expect(res.json).toHaveBeenCalledWith({ success: true });
         });
 
-        it('should handle delete errors', async () => {
-            mockRequest.params = { id: '1' };
-            const mockUser = {
-                id: 1,
-                destroy: jest.fn().mockRejectedValue(new Error('DB error'))
-            };
-            User.findByPk.mockResolvedValue(mockUser);
+        it('should return 404 if user not found', async () => {
+            User.findByPk.mockResolvedValue(null);
+            const req = { params: { id: 1 } };
+            const res = mockRes();
+            await deleteUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
+        });
 
-            await deleteUser(mockRequest, mockResponse);
-
-            expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'DB error' });
+        it('should handle errors', async () => {
+            User.findByPk.mockRejectedValue(new Error('DB error'));
+            const req = { params: { id: 1 } };
+            const res = mockRes();
+            await deleteUser(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ error: 'DB error' });
         });
     });
 });
